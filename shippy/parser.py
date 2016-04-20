@@ -24,7 +24,6 @@ def run_parser(subparsers):
     )
     run_subparser.add_argument(
         '--name',
-        required=True,
         type=str,
         help='a name for the container'
     )
