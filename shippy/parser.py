@@ -2,6 +2,14 @@ import argparse
 
 def define_parsers():
     shippy_parser = argparse.ArgumentParser(prog='shippy')
+    shippy_parser.add_argument(
+        '-v',
+        '--verbose',
+        default=False,
+        dest='isverbose',
+        action='store_true',
+        help='shows more verbose output'
+    )
     shippy_subparsers = shippy_parser.add_subparsers(dest='mode')
     run_parser(shippy_subparsers)
     return shippy_parser
