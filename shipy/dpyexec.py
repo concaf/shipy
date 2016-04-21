@@ -136,8 +136,8 @@ def dpy_restart(client, sane_input):
 
 
 def dpy(args):
-    shippy_parser = parser.define_parsers()
-    sh_args = shippy_parser.parse_args(args)
+    shipy_parser = parser.define_parsers()
+    sh_args = shipy_parser.parse_args(args)
 
     # set logging level
     if sh_args.isverbose:

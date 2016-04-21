@@ -1,4 +1,4 @@
 import sys
-from shippy import dpyexec
+from shipy import dpyexec
 
 dpyexec.dpy(sys.argv[1:])

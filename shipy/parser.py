@@ -2,8 +2,8 @@ import argparse
 
 
 def define_parsers():
-    shippy_parser = argparse.ArgumentParser(prog='shippy')
-    shippy_parser.add_argument(
+    shipy_parser = argparse.ArgumentParser(prog='shipy')
+    shipy_parser.add_argument(
         '-V',
         '--verbose',
         default=False,
@@ -11,16 +11,16 @@ def define_parsers():
         action='store_true',
         help='shows more verbose output'
     )
-    shippy_subparsers = shippy_parser.add_subparsers(dest='mode')
-    run_parser(shippy_subparsers)
-    ps_parser(shippy_subparsers)
-    kill_parser(shippy_subparsers)
-    stop_parser(shippy_subparsers)
-    rm_parser(shippy_subparsers)
-    pull_parser(shippy_subparsers)
-    restart_parser(shippy_subparsers)
+    shipy_subparsers = shipy_parser.add_subparsers(dest='mode')
+    run_parser(shipy_subparsers)
+    ps_parser(shipy_subparsers)
+    kill_parser(shipy_subparsers)
+    stop_parser(shipy_subparsers)
+    rm_parser(shipy_subparsers)
+    pull_parser(shipy_subparsers)
+    restart_parser(shipy_subparsers)
 
-    return shippy_parser
+    return shipy_parser
 
 
 def run_parser(subparsers):
