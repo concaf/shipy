@@ -3,7 +3,7 @@ import argparse
 def define_parsers():
     shippy_parser = argparse.ArgumentParser(prog='shippy')
     shippy_parser.add_argument(
-        '-v',
+        '-V',
         '--verbose',
         default=False,
         dest='isverbose',
@@ -39,4 +39,16 @@ def run_parser(subparsers):
         '--entrypoint',
         type=str,
         help='an entrypoint'
+    )
+    run_subparser.add_argument(
+        '-d',
+        action='store_true',
+        dest='detach',
+        help='detached mode, run container in the background'
+    )
+    run_subparser.add_argument(
+        '-v',
+        '--volume',
+        dest='volumes',
+        help='bind mount a volume'
     )

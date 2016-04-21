@@ -1,8 +1,8 @@
 from ast import literal_eval
+from copy import deepcopy
 from docker import Client
 import logging
 import parser
-from random import randint
 import sys
 
 
@@ -23,19 +23,39 @@ def dpy_stitch(args):
 
 
 def dpy_run(client, sane_input):
+    sane_create = deepcopy(sane_input)
+    sane_start = {}
+    host_config_params = {}
+    # pull image if it does not exist
     if not client.images(name=sane_input['image']):
         logging.info("Container image does not exist locally, pulling now.")
         for pull_output in client.pull(sane_input['image'], stream=True):
             logging.debug(literal_eval(pull_output)['status'])
 
-    if 'name' not in sane_input.keys():
-        sane_input.update({'name': 'shippy_{}'.format(randint(1, 999999999))})
+    # parse volume bindings
+    if 'volumes' in sane_input.keys():
+        volume_bindings_list = sane_input['volumes'].split(':')
 
-    logging.debug("Creating container now.")
-    client.create_container(**sane_input)
+        # does not matter if only host or both host and guest bindings are
+        # specified, this is just exposing the specified volume
+        if len(volume_bindings_list) in (1, 2):
+            sane_create.update({'volumes': volume_bindings_list[0]})
 
-    logging.info("Running container now.")
-    client.start(sane_input['name'])
+    # host_config magic
+    if 'volume_bindings_list' in locals():
+        # if both host and guest binding are specified
+        if len(volume_bindings_list) == 2:
+            host_config_params.update({'binds': [sane_input['volumes']]})
+
+    # pass host_config or not
+    if len(host_config_params) > 0:
+        sane_create.update({'host_config': client.create_host_config(**host_config_params)})
+
+    logging.debug('Creating container now.')
+    container_info = client.create_container(**sane_create)
+    sane_start.update({'container': container_info['Id']})
+    logging.info('Running container {} now.'.format(container_info['Id']))
+    client.start(**sane_start)
 
 
 def dpy(args):
