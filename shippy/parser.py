@@ -15,6 +15,7 @@ def define_parsers():
     run_parser(shippy_subparsers)
     ps_parser(shippy_subparsers)
     kill_parser(shippy_subparsers)
+    stop_parser(shippy_subparsers)
     return shippy_parser
 
 
@@ -82,4 +83,17 @@ def kill_parser(subparsers):
     kill_subparser.add_argument(
         'container',
         help='the container to kill'
+    )
+
+
+def stop_parser(subparsers):
+    stop_parser = subparsers.add_parser('stop')
+    stop_parser.add_argument(
+        'stop',
+        action='store_true',
+        help='stop a running container'
+    )
+    stop_parser.add_argument(
+        'container',
+        help='the container to stop'
     )

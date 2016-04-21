@@ -84,6 +84,16 @@ def dpy_kill(client, sane_input):
         return False
 
 
+def dpy_stop(client, sane_input):
+
+    try:
+        logging.info('Stopped container {}'.format(sane_input['container']))
+        return True
+    except errors.NotFound:
+        logging.info('Container {} not found.'.format(sane_input['container']))
+        return False
+
+
 def dpy(args):
     shippy_parser = parser.define_parsers()
     sh_args = shippy_parser.parse_args(args)
@@ -109,3 +119,6 @@ def dpy(args):
 
     if sh_args.mode == 'kill':
         dpy_kill(docker_client, sane_input)
+
+    if sh_args.mode == 'stop':
+        dpy_stop(docker_client, sane_input)
