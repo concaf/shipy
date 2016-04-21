@@ -25,7 +25,7 @@ def dpy_run(client, sane_input):
 
     # add tag to the image name if not provided by the user
     if len(sane_input['image'].split(':')) == 1:
-        logging.debug('No tag provided, adding tag latest')
+        logging.debug('No tag provided, pulling tag latest')
         sane_create.update({'image': '{}:latest'.format(sane_input['image'])})
 
     # pull image if it does not exist
@@ -87,11 +87,52 @@ def dpy_kill(client, sane_input):
 def dpy_stop(client, sane_input):
 
     try:
+        client.stop(**sane_input)
         logging.info('Stopped container {}'.format(sane_input['container']))
         return True
     except errors.NotFound:
         logging.info('Container {} not found.'.format(sane_input['container']))
         return False
+
+
+def dpy_rm(client, sane_input):
+
+    try:
+        client.remove_container(**sane_input)
+        logging.info('Removed container {}'.format(sane_input['container']))
+    except errors.NotFound:
+        logging.info('Container {} not found.'.format(sane_input['container']))
+    except Exception as e:
+        logging.info(e.message)
+
+
+def dpy_pull(client, sane_input):
+
+    # add tag to the image name if not provided by the user
+    if len(sane_input['repository'].split(':')) == 1:
+        logging.info('No tag provided, pulling tag latest')
+        sane_input.update({'repository': '{}:latest'.format(
+            sane_input['repository'])})
+
+    try:
+        for pull_output in client.pull(sane_input['repository'], stream=True):
+            logging.debug(literal_eval(pull_output)['status'])
+        logging.info('Pulled image {}'.format(sane_input['repository']))
+
+    except:
+        logging.info('Could not pull image {}'.format(
+            sane_input['repository']))
+
+
+def dpy_restart(client, sane_input):
+
+    try:
+        client.restart(**sane_input)
+        logging.info('Restarted container {}'.format(sane_input['container']))
+
+    except errors.NotFound:
+        logging.info('Could not find container {}'.format(
+            sane_input['container']))
 
 
 def dpy(args):
@@ -122,3 +163,12 @@ def dpy(args):
 
     if sh_args.mode == 'stop':
         dpy_stop(docker_client, sane_input)
+
+    if sh_args.mode == 'rm':
+        dpy_rm(docker_client, sane_input)
+
+    if sh_args.mode == 'pull':
+        dpy_pull(docker_client, sane_input)
+
+    if sh_args.mode == 'restart':
+        dpy_restart(docker_client, sane_input)

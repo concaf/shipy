@@ -16,6 +16,10 @@ def define_parsers():
     ps_parser(shippy_subparsers)
     kill_parser(shippy_subparsers)
     stop_parser(shippy_subparsers)
+    rm_parser(shippy_subparsers)
+    pull_parser(shippy_subparsers)
+    restart_parser(shippy_subparsers)
+
     return shippy_parser
 
 
@@ -96,4 +100,64 @@ def stop_parser(subparsers):
     stop_parser.add_argument(
         'container',
         help='the container to stop'
+    )
+
+
+def rm_parser(subparsers):
+    rm_parser = subparsers.add_parser('rm')
+    rm_parser.add_argument(
+        'rm',
+        action='store_true',
+        help='remove a container'
+    )
+    rm_parser.add_argument(
+        'container',
+        help='the container to remove'
+    )
+    rm_parser.add_argument(
+        '-f',
+        '--force',
+        dest='force',
+        action='store_true',
+        help='force the removal of a running container'
+    )
+    rm_parser.add_argument(
+        '-v',
+        '--volumes',
+        dest='v',
+        action='store_true',
+        help='remove the volumes associated with the container'
+    )
+    rm_parser.add_argument(
+        '-l',
+        '--link',
+        dest='link',
+        action='store_true',
+        help='remove the specified link and not the underlying container'
+    )
+
+
+def pull_parser(subparsers):
+    pull_parser = subparsers.add_parser('pull')
+    pull_parser.add_argument(
+        'pull',
+        action='store_true',
+        help='pull a container image'
+    )
+    pull_parser.add_argument(
+        'repository',
+        help='the container image to pull'
+    )
+
+
+def restart_parser(subparsers):
+    restart_parser = subparsers.add_parser('restart')
+    restart_parser.add_argument(
+        'restart',
+        action='store_true',
+        help='restart a container'
+    )
+    restart_parser.add_argument(
+        'container',
+        help='the container image to pull'
     )
