@@ -14,6 +14,7 @@ def define_parsers():
     shippy_subparsers = shippy_parser.add_subparsers(dest='mode')
     run_parser(shippy_subparsers)
     ps_parser(shippy_subparsers)
+    kill_parser(shippy_subparsers)
     return shippy_parser
 
 
@@ -70,3 +71,15 @@ def ps_parser(subparsers):
         help='show all containers'
     )
 
+
+def kill_parser(subparsers):
+    kill_subparser = subparsers.add_parser('kill')
+    kill_subparser.add_argument(
+        'kill',
+        action='store_true',
+        help='kill a container'
+    )
+    kill_subparser.add_argument(
+        'container',
+        help='the container to kill'
+    )

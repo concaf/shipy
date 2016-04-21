@@ -1,6 +1,6 @@
 from ast import literal_eval
 from copy import deepcopy
-from docker import Client
+from docker import Client, errors
 import logging
 import parser
 import sys
@@ -73,6 +73,17 @@ def dpy_ps(client, sane_input):
     return ps_output
 
 
+def dpy_kill(client, sane_input):
+
+    try:
+        client.kill(**sane_input)
+        logging.info('Killed container {}'.format(sane_input['container']))
+        return True
+    except errors.NotFound:
+        logging.info('Container {} not found.'.format(sane_input['container']))
+        return False
+
+
 def dpy(args):
     shippy_parser = parser.define_parsers()
     sh_args = shippy_parser.parse_args(args)
@@ -95,3 +106,6 @@ def dpy(args):
 
     if sh_args.mode == 'ps':
         dpy_ps(docker_client, sane_input)
+
+    if sh_args.mode == 'kill':
+        dpy_kill(docker_client, sane_input)
