@@ -61,7 +61,16 @@ def dpy_run(client, sane_input):
 
 def dpy_ps(client, sane_input):
 
-    return client.containers(**sane_input)
+    ps_output = client.containers(**sane_input)
+    for container in ps_output:
+        logging.info('Name: {}, ID: {}, State: {}'.format(
+            container['Names'][0].split('/')[1],
+            container['Id'][:8],
+            container['State']
+            )
+        )
+
+    return ps_output
 
 
 def dpy(args):

@@ -69,10 +69,4 @@ def ps_parser(subparsers):
         action='store_true',
         help='show all containers'
     )
-    ps_subparser.add_argument(
-        '-q',
-        '--quiet',
-        dest='quiet',
-        action='store_true',
-        help='only display numeric Ids'
-    )
+
