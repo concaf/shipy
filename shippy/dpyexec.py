@@ -11,7 +11,8 @@ def dpy_stitch(args):
 
     # remove unnecessary parameters from the args dictionary
     for param, value in args.items():
-        if param not in ('mode', args['mode'], 'isverbose') and value != None:
+        if param not in ('mode', args['mode'], 'isverbose') and \
+                value is not None:
             sane_input.update({param: value})
 
     # add tag to the image name if not provided by the user
@@ -49,7 +50,8 @@ def dpy_run(client, sane_input):
 
     # pass host_config or not
     if len(host_config_params) > 0:
-        sane_create.update({'host_config': client.create_host_config(**host_config_params)})
+        sane_create.update({'host_config':
+                            client.create_host_config(**host_config_params)})
 
     logging.debug('Creating container now.')
     container_info = client.create_container(**sane_create)

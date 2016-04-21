@@ -1,5 +1,6 @@
 import argparse
 
+
 def define_parsers():
     shippy_parser = argparse.ArgumentParser(prog='shippy')
     shippy_parser.add_argument(
