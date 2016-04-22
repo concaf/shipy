@@ -35,7 +35,7 @@ def run_parser(subparsers):
     )
     run_subparser.add_argument(
         'command',
-        nargs='?',
+        nargs='*',
         help='the command to be run in the container'
     )
     run_subparser.add_argument(
