@@ -136,6 +136,19 @@ def dpy_restart(client, sane_input):
 
 
 def dpy(args):
+
+    if '--file' in args:
+        f_pos = args.index('--file')
+
+        with open(args[f_pos+1]) as f:
+            command = f.readline().split()
+
+            if command[0] == 'docker':
+                args = command[1:]
+            else:
+                raise SyntaxError(
+                    'The input file has a malformed docker command.')
+
     shipy_parser = parser.define_parsers()
     sh_args = shipy_parser.parse_args(args)
 
