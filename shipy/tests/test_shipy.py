@@ -10,14 +10,10 @@ def test_input_sanitization():
     assert {'sanitized_input': True} == dpy_stitch(test_input)
 
 
-def test_malformed_docker_file_input():
-    tmp_path = '/tmp/shipy_test'
-    args = ['--file', tmp_path]
+def test_malformed_docker_file_input(tmpdir):
+    tmp_path = tmpdir.mkdir('shipy_temp').join('shipy_test')
+    tmp_path.write('dckr run busybox 8.8.8.8')
 
-    with open(tmp_path, mode='w') as f:
-        f.write('dckr run busybox 8.8.8.8')
-
+    args = ['--file', str(tmp_path)]
     with pytest.raises(SyntaxError):
         dpy(args)
-
-    os.remove(tmp_path)
