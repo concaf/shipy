@@ -1,5 +1,4 @@
 import pytest
-import os
 from shipy.dpyexec import dpy_stitch, dpy
 
 

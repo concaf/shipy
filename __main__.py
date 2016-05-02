@@ -1,4 +1,5 @@
 import sys
-from shipy import dpyexec
+from shipy.dpyexec import Shipy
 
-dpyexec.dpy(sys.argv[1:])
+shipy_client = Shipy()
+shipy_client.dpy(sys.argv[1:])
