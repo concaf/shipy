@@ -25,6 +25,6 @@ def client(request):
 
 
 def container_name():
-    prefix='bruce'
-    suffix='wayne'
+    prefix = 'bruce'
+    suffix = 'wayne'
     return '{}-{}-{}'.format(prefix, randint(1, 10000000), suffix)

@@ -1,5 +1,4 @@
 from ast import literal_eval
-from copy import deepcopy
 from docker import Client, errors
 import logging
 import parser
@@ -64,15 +63,6 @@ class Shipy(object):
                     host_config_params.update({param: args[param]})
                 del args[param]
 
-            # # does not matter if only host or both host and guest bindings are
-            # # specified, this is just exposing the specified volume
-            # if len(volume_bindings_list) in (1, 2):
-            #     sane_create.update({'volumes': volume_bindings_list[0]})
-            # if len(volume_bindings_list) == 2:
-            #     logging.debug('Passing volume bindings to the host_config')
-            #     host_config_params.update({'binds': [sane_input['volumes']]})
-
-        # pass host_config or not
         if len(host_config_params) > 0:
             logging.debug('Creating host_config.')
             host_config = client.create_host_config(**host_config_params)
@@ -82,34 +72,39 @@ class Shipy(object):
         return args, host_config
 
     def run(self, client, sane_input):
-        sane_create = deepcopy(sane_input)
-        sane_start = {}
-
-        # add tag to the image name if not provided by the user
-        if len(sane_input['image'].split(':')) == 1:
-            logging.debug('No tag provided, pulling tag latest')
-            sane_create.update({'image': '{}:latest'.format(sane_input['image'])})
 
         # pull image if it does not exist
         if not client.images(name=sane_input['image']):
             logging.info('Container image does not exist locally, pulling ...')
-            for pull_output in client.pull(sane_input['image'], stream=True):
-                logging.debug(literal_eval(pull_output)['status'])
+            self.pull(client, sane_input)
 
-        # pass host_config or not
+        # Create and start the container
+        return self.start(client, self.create(client, sane_input))
+
+    def start(self, client, cid):
+        sane_start = {}
+        sane_start.update({'container': cid})
+        try:
+            logging.info('Running cotainer {}.'.format(cid))
+            client.start(**sane_start)
+            return cid
+        except Exception as e:
+            logging.info(e.message)
+            return False
+
+    def create(self, client, sane_create):
+        if len(sane_create['image'].split(':')) == 1:
+            logging.debug('No tag provided, using tag latest')
+            sane_create.update({'image': '{}:latest'.
+                               format(sane_create['image'])})
+
         sane_create, host_config = self._host_config_gen(client, sane_create)
         if host_config:
             sane_create.update({'host_config': host_config})
 
         logging.debug('Creating container.')
         container_info = client.create_container(**sane_create)
-        sane_start.update({'container': container_info['Id']})
-        try:
-            logging.info('Running cotainer {}.'.format(container_info['Id']))
-            client.start(**sane_start)
-            return container_info['Id']
-        except:
-            return False
+        return container_info['Id']
 
     def ps(self, client, sane_input):
 
@@ -131,51 +126,63 @@ class Shipy(object):
             logging.info('Killed container {}'.format(sane_input['container']))
             return True
         except errors.NotFound:
-            logging.info('Container {} not found.'.format(sane_input['container']))
+            logging.info('Container {} not found.'
+                         .format(sane_input['container']))
             return False
 
     def stop(self, client, sane_input):
 
         try:
             client.stop(**sane_input)
-            logging.info('Stopped container {}'.format(sane_input['container']))
+            logging.info('Stopped container {}'
+                         .format(sane_input['container']))
             return True
         except errors.NotFound:
-            logging.info('Container {} not found.'.format(sane_input['container']))
+            logging.info('Container {} not found.'
+                         .format(sane_input['container']))
             return False
 
     def rm(self, client, sane_input):
 
         try:
             client.remove_container(**sane_input)
-            logging.info('Removed container {}'.format(sane_input['container']))
+            logging.info('Removed container {}'
+                         .format(sane_input['container']))
         except errors.NotFound:
-            logging.info('Container {} not found.'.format(sane_input['container']))
+            logging.info('Container {} not found.'
+                         .format(sane_input['container']))
         except Exception as e:
             logging.info(e.message)
 
     def pull(self, client, sane_input):
 
         # add tag to the image name if not provided by the user
-        if len(sane_input['repository'].split(':')) == 1:
+        if len(sane_input['image'].split(':')) == 1:
             logging.info('No tag provided, pulling tag latest')
-            sane_input.update({'repository': '{}:latest'.format(
-                sane_input['repository'])})
+            sane_input.update({'image': '{}:latest'.format(
+                sane_input['image'])})
 
         try:
-            for pull_output in client.pull(sane_input['repository'], stream=True):
+            for pull_output in client.pull(sane_input['image'], stream=True):
                 logging.debug(literal_eval(pull_output)['status'])
-            logging.info('Pulled image {}'.format(sane_input['repository']))
+
+            for images in client.images():
+                if images['RepoTags'][0] == sane_input['image']:
+                    logging.info('Pulled image {}'.format(
+                        sane_input['image']))
+                    return True
 
         except:
             logging.info('Could not pull image {}'.format(
-                sane_input['repository']))
+                sane_input['image']))
+            return False
 
     def restart(self, client, sane_input):
 
         try:
             client.restart(**sane_input)
-            logging.info('Restarted container {}'.format(sane_input['container']))
+            logging.info('Restarted container {}'
+                         .format(sane_input['container']))
 
         except errors.NotFound:
             logging.info('Could not find container {}'.format(

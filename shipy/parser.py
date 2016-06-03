@@ -110,7 +110,8 @@ def run_parser(subparsers):
         '-l',
         '--label',
         dest='labels',
-        help='set metadata on the container (e.g., --label com.example.key=value)'
+        help='set metadata on the container '
+             '(e.g., --label com.example.key=value)'
     )
     run_subparser.add_argument(
         '--volume-driver',
@@ -378,7 +379,7 @@ def pull_parser(subparsers):
         help='pull a container image'
     )
     pull_parser.add_argument(
-        'repository',
+        'image',
         help='the container image to pull'
     )
 

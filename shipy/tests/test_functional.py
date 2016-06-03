@@ -1,6 +1,7 @@
 import pytest
 from utils import client, shipy, container_name as cn
 
+
 def cinput(cmd):
     return cmd.split()
 
@@ -24,6 +25,7 @@ def test_malformed_docker_file_input(shipy, tmpdir):
 
 
 def test_docker_run_basic(client, shipy):
-    container = shipy.shipy(cinput('run --name {} busybox ping 127.0.0.1'.format(cn())))
-    assert len(client.containers(filters={'id': container, 'status': 'running'})) == 1
-
+    container = shipy.shipy(
+        cinput('run --name {} busybox ping 127.0.0.1'.format(cn())))
+    assert len(client.containers(
+        filters={'id': container, 'status': 'running'})) == 1
