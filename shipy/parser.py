@@ -35,7 +35,7 @@ def run_parser(subparsers):
     )
     run_subparser.add_argument(
         'command',
-        nargs='*',
+        nargs=argparse.REMAINDER,
         help='the command to be run in the container'
     )
     run_subparser.add_argument(
@@ -48,13 +48,13 @@ def run_parser(subparsers):
         type=str,
         help='an entrypoint'
     )
-    run_subparser.add_argument(
-        '-d',
-        '--detach',
-        action='store_true',
-        dest='detach',
-        help='detached mode, run container in the background'
-    )
+    # run_subparser.add_argument(
+    #     '-d',
+    #     '--detach',
+    #     action='store_true',
+    #     dest='detach',
+    #     help='detached mode, run container in the background'
+    # )
     run_subparser.add_argument(
         '--hostname',
         dest='hostname',
@@ -67,23 +67,24 @@ def run_parser(subparsers):
         help='sets the username or UID used and optionally the '
              'groupname or GID for the  specified command'
     )
-    run_subparser.add_argument(
-        '-i',
-        '--interactive',
-        dest='stdin_open',
-        action='store_true',
-        help='keep STDIN open even if not attached'
-    )
-    run_subparser.add_argument(
-        '-t',
-        '--tty',
-        dest='tty',
-        action='store_true',
-        help='allocate a pseudo-TTY'
-    )
+    # run_subparser.add_argument(
+    #     '-i',
+    #     '--interactive',
+    #     dest='stdin_open',
+    #     action='store_true',
+    #     help='keep STDIN open even if not attached'
+    # )
+    # run_subparser.add_argument(
+    #     '-t',
+    #     '--tty',
+    #     dest='tty',
+    #     action='store_true',
+    #     help='allocate a pseudo-TTY'
+    # )
     run_subparser.add_argument(
         '-e',
         '--env',
+        action='append',
         dest='environment',
         help='set environment variables'
     )

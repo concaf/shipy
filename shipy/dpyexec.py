@@ -205,7 +205,7 @@ class Shipy(object):
 
         shipy_parser = parser.define_parsers()
         sh_args = shipy_parser.parse_args(args)
-
+        print sh_args
         # set logging level
         if sh_args.isverbose:
             logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
