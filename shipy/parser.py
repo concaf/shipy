@@ -56,7 +56,6 @@ def run_parser(subparsers):
         help='detached mode, run container in the background'
     )
     run_subparser.add_argument(
-        '-h',
         '--hostname',
         dest='hostname',
         help='optional hostname for the container'
@@ -89,13 +88,6 @@ def run_parser(subparsers):
         help='set environment variables'
     )
     run_subparser.add_argument(
-        '--net',
-        choices=['none'],
-        dest='network_disabled',
-        action='store_true',
-        help='disable networking'
-    )
-    run_subparser.add_argument(
         '--cpu-shares',
         dest='cpu_shares',
         type=int,
@@ -111,7 +103,7 @@ def run_parser(subparsers):
     run_subparser.add_argument(
         '--mac-address',
         dest='mac_address',
-        type='str',
+        type=str,
         help='container MAC address (e.g. 92:d0:c6:0a:29:33)'
     )
     run_subparser.add_argument(
@@ -123,7 +115,7 @@ def run_parser(subparsers):
     run_subparser.add_argument(
         '--volume-driver',
         dest='volume_driver',
-        type='str',
+        type=str,
         help='container\'s volume driver. This driver creates volumes '
              'specified either from a Dockerfile\'s VOLUME instruction '
              'or from the docker run -v flag'
@@ -131,15 +123,21 @@ def run_parser(subparsers):
     run_subparser.add_argument(
         '--stop-signal',
         dest='stop_signal',
-        type='str',
+        type=str,
         help='signal to stop a container. Default is SIGTERM'
     )
     # HostConfig object parameters hereafter
     run_subparser.add_argument(
         '-v',
-        '--volume',
-        dest='volumes',
+        '--volumes',
+        dest='binds',
         help='bind mount a volume'
+    )
+    run_subparser.add_argument(
+        '-p',
+        '--ports',
+        dest='port_bindings',
+        help='port bindings'
     )
     run_subparser.add_argument(
         '--oom-kill-disable',
@@ -150,7 +148,7 @@ def run_parser(subparsers):
     run_subparser.add_argument(
         '--oom-score-adj',
         dest='oom_score_adj',
-        type='int',
+        type=int,
         help='tune the host\'s OOM preferences for containers '
              '(accepts -1000 to 1000)'
     )
@@ -191,7 +189,7 @@ def run_parser(subparsers):
     run_subparser.add_argument(
         '--net',
         dest='network_mode',
-        type='str',
+        type=str,
         help='set the Network mode for the container'
     )
     run_subparser.add_argument(
@@ -243,9 +241,14 @@ def run_parser(subparsers):
         help='ulimit options'
     )
     run_subparser.add_argument(
+        '--log-opt',
+        dest='log_config',
+        help='logging configuration of the container'
+    )
+    run_subparser.add_argument(
         '-m',
         '--memory',
-        dest='memory',
+        dest='mem_limit',
         help='memory limit (format: [number][optional unit], where '
              'unit = b, k, m, or g)'
     )
@@ -260,7 +263,7 @@ def run_parser(subparsers):
     run_subparser.add_argument(
         '--memory-swappiness',
         dest='mem_swappiness',
-        type='int',
+        type=int,
         help='tune a container\'s memory swappiness behavior. '
              'Accepts an integer between 0 and 100.'
     )
@@ -271,8 +274,8 @@ def run_parser(subparsers):
     )
     run_subparser.add_argument(
         '--cpu-period',
-        dest='cpu',
-        help=''
+        dest='cpu_period',
+        help='limit the CPU CFS (Completely Fair Scheduler) period'
     )
     run_subparser.add_argument(
         '--group-add',
@@ -353,8 +356,8 @@ def rm_parser(subparsers):
     )
     rm_parser.add_argument(
         '-v',
-        '--volumes',
-        dest='v',
+        '--volume',
+        dest='volumes',
         action='store_true',
         help='remove the volumes associated with the container'
     )

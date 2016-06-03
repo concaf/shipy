@@ -7,21 +7,83 @@ import sys
 
 
 class Shipy(object):
-    def stitch(self, args):
+    def _sanify(self, args):
         sane_input = {}
 
         # remove unnecessary parameters from the args dictionary
         for param, value in args.items():
             if param not in ('mode', args['mode'], 'isverbose') and \
-                    value is not None:
+                    value is not (None or False):
                 sane_input.update({param: value})
 
         return sane_input
 
+    def _host_config_gen(self, client, args):
+        host_config_params = {}
+        parameters = [
+            'binds',
+            'port_bindings',
+            # 'lxc_conf', # not implemented
+            'oom_kill_disable',
+            'oom_score_adj',
+            'publish_all_ports',
+            'links',
+            'privileged',
+            'dns',
+            'dns_search',
+            'volumes_from',
+            'network_mode',
+            'restart_policy',
+            'cap_add',
+            'cap_drop',
+            'extra_hosts',
+            'read_only',
+            'pid_mode',
+            'ipc_mode',
+            'security_opt',
+            'ulimits',
+            'log_config',
+            'mem_limit',
+            'memswap_limit',
+            'mem_swappiness',
+            'shm_size',
+            # 'cpu_group', # not implemented
+            'cpu_period',
+            'group_add',
+            'devices',
+            'tmpfs'
+        ]
+
+        # if 'volumes' in sane_input.keys():
+        #     volume_bindings_list = sane_input['volumes'].split(':')
+
+        for param in parameters:
+            if param in args.keys():
+                # Check if the parameter value is False
+                if args[param]:
+                    host_config_params.update({param: args[param]})
+                del args[param]
+
+            # # does not matter if only host or both host and guest bindings are
+            # # specified, this is just exposing the specified volume
+            # if len(volume_bindings_list) in (1, 2):
+            #     sane_create.update({'volumes': volume_bindings_list[0]})
+            # if len(volume_bindings_list) == 2:
+            #     logging.debug('Passing volume bindings to the host_config')
+            #     host_config_params.update({'binds': [sane_input['volumes']]})
+
+        # pass host_config or not
+        if len(host_config_params) > 0:
+            logging.debug('Creating host_config.')
+            host_config = client.create_host_config(**host_config_params)
+        else:
+            host_config = None
+
+        return args, host_config
+
     def run(self, client, sane_input):
         sane_create = deepcopy(sane_input)
         sane_start = {}
-        host_config_params = {}
 
         # add tag to the image name if not provided by the user
         if len(sane_input['image'].split(':')) == 1:
@@ -34,29 +96,20 @@ class Shipy(object):
             for pull_output in client.pull(sane_input['image'], stream=True):
                 logging.debug(literal_eval(pull_output)['status'])
 
-        # parse volume bindings
-        if 'volumes' in sane_input.keys():
-            volume_bindings_list = sane_input['volumes'].split(':')
-
-            # does not matter if only host or both host and guest bindings are
-            # specified, this is just exposing the specified volume
-            if len(volume_bindings_list) in (1, 2):
-                sane_create.update({'volumes': volume_bindings_list[0]})
-            if len(volume_bindings_list) == 2:
-                logging.debug('Passing volume bindings to the host_config')
-                host_config_params.update({'binds': [sane_input['volumes']]})
-
         # pass host_config or not
-        if len(host_config_params) > 0:
-            logging.debug('Creating host_config.')
-            sane_create.update({'host_config':
-                                client.create_host_config(**host_config_params)})
+        sane_create, host_config = self._host_config_gen(client, sane_create)
+        if host_config:
+            sane_create.update({'host_config': host_config})
 
         logging.debug('Creating container.')
         container_info = client.create_container(**sane_create)
         sane_start.update({'container': container_info['Id']})
-        logging.info('Running container {}.'.format(container_info['Id']))
-        client.start(**sane_start)
+        try:
+            logging.info('Running cotainer {}.'.format(container_info['Id']))
+            client.start(**sane_start)
+            return container_info['Id']
+        except:
+            return False
 
     def ps(self, client, sane_input):
 
@@ -128,8 +181,9 @@ class Shipy(object):
             logging.info('Could not find container {}'.format(
                 sane_input['container']))
 
-    def dpy(self, args):
+    def shipy(self, args):
 
+        "Check if input is from a file"
         if '--file' in args:
             f_pos = args.index('--file')
 
@@ -156,25 +210,25 @@ class Shipy(object):
 
         docker_client = Client(base_url=server_url)
 
-        sane_input = self.stitch(vars(sh_args))
+        sane_input = self._sanify(vars(sh_args))
 
         if sh_args.mode == 'run':
-            self.run(docker_client, sane_input)
+            return self.run(docker_client, sane_input)
 
         if sh_args.mode == 'ps':
-            self.ps(docker_client, sane_input)
+            return self.ps(docker_client, sane_input)
 
         if sh_args.mode == 'kill':
-            self.kill(docker_client, sane_input)
+            return self.kill(docker_client, sane_input)
 
         if sh_args.mode == 'stop':
-            self.stop(docker_client, sane_input)
+            return self.stop(docker_client, sane_input)
 
         if sh_args.mode == 'rm':
-            self.rm(docker_client, sane_input)
+            return self.rm(docker_client, sane_input)
 
         if sh_args.mode == 'pull':
-            self.pull(docker_client, sane_input)
+            return self.pull(docker_client, sane_input)
 
         if sh_args.mode == 'restart':
-            self.restart(docker_client, sane_input)
+            return self.restart(docker_client, sane_input)
