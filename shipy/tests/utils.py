@@ -24,7 +24,30 @@ def client(request):
     return client
 
 
+def cinput(cmd):
+    return cmd.split()
+
+
 def container_name():
     prefix = 'bruce'
     suffix = 'wayne'
     return '{}-{}-{}'.format(prefix, randint(1, 10000000), suffix)
+
+
+def test_docker_run_template(client,
+                             shipy,
+                             farg=' ',
+                             fval=' ',
+                             fval2=' ',
+                             cimage='busybox',
+                             cargs='ping 127.0.0.1',
+                             cn=None):
+
+    if cn is None:
+        cn = container_name()
+    result = []
+    farg2 = ' ' if fval2 == ' ' else farg
+    container = shipy.shipy(
+        cinput('run {} {} {} {} --name {} {} {}'
+               .format(farg, fval, farg2, fval2, cn, cimage, cargs)))
+    return container

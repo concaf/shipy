@@ -98,7 +98,6 @@ def run_parser(subparsers):
         '-w',
         '--workdir',
         dest='working_dir',
-        type=int,
         help='working directory inside the container'
     )
     run_subparser.add_argument(
