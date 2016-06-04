@@ -12,9 +12,15 @@ class Shipy(object):
         # remove unnecessary parameters from the args dictionary
         for param, value in args.items():
             if param not in ('mode', args['mode'], 'isverbose') and \
-                    value is not (None or False):
+                    value not in (None, False):
                 sane_input.update({param: value})
 
+            if param == 'labels' and value is not None:
+                label_dict = {}
+                for label in value:
+                    k, v = label.split('=')
+                    label_dict.update({k: v})
+                sane_input.update({param: label_dict})
         return sane_input
 
     def _host_config_gen(self, client, args):

@@ -97,10 +97,33 @@ def test_docker_run_cpu_shares(client, shipy):
            client.inspect_container(container)['HostConfig']['CpuShares']
 
 
-def test_docker_workdir(client, shipy):
+def test_docker_run_workdir(client, shipy):
     argument = ('-w', '--workdir')
     fval = '/tmp'
     for farg in argument:
         container = run_template(client, shipy, farg=farg, fval=fval)
         assert fval == \
                client.inspect_container(container)['Config']['WorkingDir']
+
+
+def test_docker_run_mac_address(client, shipy):
+    farg = '--mac-address'
+    fval = 'aa:aa:aa:aa:aa:aa'
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    assert fval == \
+           client.inspect_container(container)['NetworkSettings']['MacAddress']
+
+
+def test_docker_run_labels(client, shipy):
+    argument = ('-l', '--label')
+    fval = 'batman=begins'
+    fval2 = 'thedarkknight=rises'
+    for farg in argument:
+        container = run_template(client, shipy,
+                                 farg=farg, fval=fval, fval2=fval2)
+
+        for label in (fval, fval2):
+            l = label.split('=')
+            assert l[1] == \
+                client.inspect_container(container)['Config']['Labels'][l[0]]

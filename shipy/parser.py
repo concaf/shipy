@@ -109,6 +109,7 @@ def run_parser(subparsers):
     run_subparser.add_argument(
         '-l',
         '--label',
+        action='append',
         dest='labels',
         help='set metadata on the container '
              '(e.g., --label com.example.key=value)'

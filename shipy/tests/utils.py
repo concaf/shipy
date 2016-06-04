@@ -45,7 +45,6 @@ def test_docker_run_template(client,
 
     if cn is None:
         cn = container_name()
-    result = []
     farg2 = ' ' if fval2 == ' ' else farg
     container = shipy.shipy(
         cinput('run {} {} {} {} --name {} {} {}'
