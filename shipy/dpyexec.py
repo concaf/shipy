@@ -69,12 +69,18 @@ class Shipy(object):
                     host_config_params.update({param: args[param]})
                 del args[param]
 
+        if 'binds' in host_config_params.keys():
+            volumes = []
+            for binding in host_config_params['binds']:
+                volumes.append(binding.split(':')[0])
+
+            args.update({'volumes': volumes})
+
         if len(host_config_params) > 0:
             logging.debug('Creating host_config.')
             host_config = client.create_host_config(**host_config_params)
         else:
             host_config = None
-
         return args, host_config
 
     def run(self, client, sane_input):

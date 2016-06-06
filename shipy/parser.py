@@ -114,14 +114,14 @@ def run_parser(subparsers):
         help='set metadata on the container '
              '(e.g., --label com.example.key=value)'
     )
-    run_subparser.add_argument(
-        '--volume-driver',
-        dest='volume_driver',
-        type=str,
-        help='container\'s volume driver. This driver creates volumes '
-             'specified either from a Dockerfile\'s VOLUME instruction '
-             'or from the docker run -v flag'
-    )
+    # run_subparser.add_argument(
+    #     '--volume-driver',
+    #     dest='volume_driver',
+    #     type=str,
+    #     help='container\'s volume driver. This driver creates volumes '
+    #          'specified either from a Dockerfile\'s VOLUME instruction '
+    #          'or from the docker run -v flag'
+    # )
     run_subparser.add_argument(
         '--stop-signal',
         dest='stop_signal',
@@ -131,7 +131,8 @@ def run_parser(subparsers):
     # HostConfig object parameters hereafter
     run_subparser.add_argument(
         '-v',
-        '--volumes',
+        '--volume',
+        action='append',
         dest='binds',
         help='bind mount a volume'
     )

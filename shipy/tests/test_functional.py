@@ -127,3 +127,31 @@ def test_docker_run_labels(client, shipy):
             l = label.split('=')
             assert l[1] == \
                 client.inspect_container(container)['Config']['Labels'][l[0]]
+
+
+def test_docker_run_stop_signal(client, shipy):
+    farg = '--stop-signal'
+    fval = 'SIGKILL'
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    assert fval == \
+           client.inspect_container(container)['Config']['StopSignal']
+
+
+def test_docker_run_volumes(client, shipy):
+    argument = ('-v', '--volume')
+    fval = '/test_dir1:/test_dir_mount1:ro'
+    fval2 = '/test_dir2:/tmp'
+
+    for farg in argument:
+        container = run_template(client, shipy,
+                                 farg=farg, fval=fval, fval2=fval2)
+
+        assert [fval, fval2] == \
+               client.inspect_container(container)['HostConfig']['Binds']
+
+        assert {
+                    fval.split(':')[0]: {},
+                    fval2.split(':')[0]: {}
+               } == \
+               client.inspect_container(container)['Config']['Volumes']
