@@ -138,7 +138,8 @@ def run_parser(subparsers):
     )
     run_subparser.add_argument(
         '-p',
-        '--ports',
+        '--publish',
+        action='append',
         dest='port_bindings',
         help='port bindings'
     )

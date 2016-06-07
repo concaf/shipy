@@ -59,22 +59,57 @@ class Shipy(object):
             'tmpfs'
         ]
 
-        # if 'volumes' in sane_input.keys():
-        #     volume_bindings_list = sane_input['volumes'].split(':')
-
         for param in parameters:
             if param in args.keys():
                 # Check if the parameter value is False
-                if args[param]:
+                if args[param] and param != 'port_bindings':
                     host_config_params.update({param: args[param]})
-                del args[param]
+                    del args[param]
 
-        if 'binds' in host_config_params.keys():
-            volumes = []
-            for binding in host_config_params['binds']:
-                volumes.append(binding.split(':')[0])
+                if param == 'port_bindings':
+                    create_container_bindings = []
+                    host_config_bindings = {param: {}}
+                    # setting container port
+                    for bindings in args[param]:
+                        ports = bindings.split(':')
+                        container_port = ports[-1]
+                        host_params = ports[:-1]
 
-            args.update({'volumes': volumes})
+                        if len(host_params) == 0:
+                            host_bindings = None
+                        elif len(host_params) == 1:
+                            host_bindings = ports[:-1]
+                        elif len(host_params) == 2:
+                            host_bindings = tuple(ports[:-1])
+                        else:
+                            raise Exception
+
+                        # add /tcp as default for container port
+                        if container_port[-3:] not in ('tcp', 'udp'):
+                            container_port = '{}/tcp'.format(container_port)
+                        protocol = container_port[-3:]
+                        only_port = container_port[:-4]
+                        # append to create_container bindings
+                        create_container_bindings.append((only_port, protocol))
+
+                        # host_config port bindings
+                        host_config_bindings[param].update(
+                                                    {container_port:
+                                                        host_bindings})
+
+                    # pass create_container bindings
+                    args['ports'] = create_container_bindings
+
+                    # pass host_config bindinds
+                    host_config_params[param] = host_config_bindings[param]
+
+                    del args[param]
+
+                if param == 'binds':
+                    volume_bindings = []
+                    for bindings in host_config_params[param]:
+                        volume_bindings.append(bindings.split(':')[0])
+                    args.update({'volumes': volume_bindings})
 
         if len(host_config_params) > 0:
             logging.debug('Creating host_config.')
@@ -97,7 +132,7 @@ class Shipy(object):
         sane_start = {}
         sane_start.update({'container': cid})
         try:
-            logging.info('Running cotainer {}.'.format(cid))
+            logging.info('Running container {}.'.format(cid))
             client.start(**sane_start)
             return cid
         except Exception as e:
