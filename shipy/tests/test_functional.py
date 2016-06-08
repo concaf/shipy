@@ -160,26 +160,46 @@ def test_docker_run_volumes(client, shipy):
                client.inspect_container(container)['Config']['Volumes']
 
 
-# def test_docker_run_ports(client, shipy):
-#     argument = ('-p', '--publish')
-#     fval = ('13370:23370/udp', '13371:23371', '13372:127.0.0.1:23372', '13373', )
-#     ext_fval = list(fval)
-#     for index, value in enumerate(fval):
-#         if value[-3:] in ('tcp', 'udp'):
-#             pass
-#         else:
-#             ext_fval[index] = '{}/tcp'.format(value)
-#
-#     for farg in argument:
-#         container = run_template(client, shipy,
-#                                  farg=farg, fval=fval)
-#
-#         assert_dict ={}
-#         for value in fval:
-#             assert_dict.update({value.split(':')[0]: {}})
-#
-#         assert assert_dict == \
-#                client.inspect_container(container)['Config']['ExposedPorts']
-#
-#         client.inspect_container(container)['HostConfig']['PortBindings']
-#         client.inspect_container(container)['NetworkSettings']['Networks']['Ports']
+def test_docker_run_ports(client, shipy, capsys):
+    argument = ('-p', '--publish')
+    fval = ('13370:23370/udp', '13371:23371', '127.0.0.1:13372:23372',
+            '23373', '127.0.0.1::23374')
+    ext_fval = []
+    only_ports = []
+
+    for value in fval:
+        container_port = value.split(':')[-1]
+        host_params = value.split(':')[:-1]
+        if container_port[-3:] not in ('tcp', 'udp'):
+            ext_fval.append('{}:{}/tcp'.format(host_params, container_port))
+        else:
+            ext_fval.append('{}:{}'.format(host_params, container_port))
+
+    for value in ext_fval:
+        only_ports.append(value.split(':')[-1])
+
+    for farg in argument:
+        container = run_template(client, shipy,
+                                 farg=farg, fval=fval)
+
+        exposed_ports = \
+            client.inspect_container(container)['Config']['ExposedPorts'].keys()
+        exposed_ports.sort()
+        # print ext_fval, exposed_ports
+        assert only_ports == exposed_ports
+
+        for cport, ncport in \
+                client.inspect_container(
+                    container)['HostConfig']['PortBindings'].items():
+
+            if ncport[0]['HostIp']:
+                host_conf = '[\'{}\', \'{}\']'.format(ncport[0]['HostIp'], ncport[0]['HostPort'])
+            elif ncport[0]['HostPort']:
+                host_conf = '[\'{}\']'.format(ncport[0]['HostPort'])
+            else:
+                host_conf = []
+
+            assert '{}:{}'.format(host_conf, cport) in ext_fval
+
+        client.remove_container(container, force=True)
+

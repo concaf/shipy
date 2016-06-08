@@ -136,7 +136,7 @@ class Shipy(object):
             client.start(**sane_start)
             return cid
         except Exception as e:
-            logging.info(e.message)
+            logging.info(e)
             return False
 
     def create(self, client, sane_create):
