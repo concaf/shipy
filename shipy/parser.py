@@ -143,19 +143,19 @@ def run_parser(subparsers):
         dest='port_bindings',
         help='port bindings'
     )
-    run_subparser.add_argument(
-        '--oom-kill-disable',
-        action='store_true',
-        dest='oom_kill_disable',
-        help='whether to disable OOM Killer for the container or not'
-    )
-    run_subparser.add_argument(
-        '--oom-score-adj',
-        dest='oom_score_adj',
-        type=int,
-        help='tune the host\'s OOM preferences for containers '
-             '(accepts -1000 to 1000)'
-    )
+    # run_subparser.add_argument(
+    #     '--oom-kill-disable',
+    #     action='store_true',
+    #     dest='oom_kill_disable',
+    #     help='whether to disable OOM Killer for the container or not'
+    # )
+    # run_subparser.add_argument(
+    #     '--oom-score-adj',
+    #     dest='oom_score_adj',
+    #     type=int,
+    #     help='tune the host\'s OOM preferences for containers '
+    #          '(accepts -1000 to 1000)'
+    # )
     run_subparser.add_argument(
         '-P',
         '--publish-all',
@@ -166,6 +166,7 @@ def run_parser(subparsers):
     run_subparser.add_argument(
         '--link',
         dest='links',
+        action='append',
         help='add link to another container in the form of <name or id>:alias '
              'or just <name or id> in which case the alias will match the name'
     )

@@ -160,7 +160,7 @@ def test_docker_run_volumes(client, shipy):
                client.inspect_container(container)['Config']['Volumes']
 
 
-def test_docker_run_ports(client, shipy, capsys):
+def test_docker_run_publish(client, shipy):
     argument = ('-p', '--publish')
     fval = ('13370:23370/udp', '13371:23371', '127.0.0.1:13372:23372',
             '23373', '127.0.0.1::23374')
@@ -203,3 +203,44 @@ def test_docker_run_ports(client, shipy, capsys):
 
         client.remove_container(container, force=True)
 
+
+def test_docker_run_publish_all(client, shipy):
+    argument = ('-P', '--publish-all')
+
+    for farg in argument:
+        container = run_template(client, shipy,
+                                 farg=farg)
+
+        assert client.inspect_container(container)['HostConfig']['PublishAllPorts']
+
+
+def test_docker_run_links(client, shipy, capsys):
+    farg = '--link'
+    fval = []
+
+    for _ in range(2):
+        fval.append(cn())
+
+    fval[1] += ':alias'
+
+    fval = tuple(fval)
+
+    ext_fval = []
+
+    for linked_to in fval:
+        run_template(client, shipy, cn=linked_to.split(':')[0])
+
+        if len(linked_to.split(':')) == 1:
+            linked_to += ':{}'.format(linked_to)
+        ext_fval.append(linked_to)
+
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    links = client.inspect_container(container)['HostConfig']['Links']
+
+    assert len(fval) == len(links)
+
+    for link in links:
+        name, _, alias = ''.join(link.split(':')).split('/')[1:]
+
+        assert '{}:{}'.format(name, alias) in ext_fval

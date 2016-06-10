@@ -2,6 +2,7 @@ from ast import literal_eval
 from docker import Client, errors
 import logging
 import parser
+from random import randint
 import sys
 
 
@@ -111,6 +112,20 @@ class Shipy(object):
                         volume_bindings.append(bindings.split(':')[0])
                     args.update({'volumes': volume_bindings})
 
+                if param == 'links':
+                    final_links = []
+                    links = host_config_params[param]
+
+                    for link in links:
+                        link_split = link.split(':')
+
+                        if len(link_split) == 1:
+                            final_links.append((link_split[0], link_split[0]))
+                        else:
+                            final_links.append((link_split[0], link_split[1]))
+
+                    host_config_params[param] = final_links
+
         if len(host_config_params) > 0:
             logging.debug('Creating host_config.')
             host_config = client.create_host_config(**host_config_params)
@@ -126,6 +141,7 @@ class Shipy(object):
             self.pull(client, sane_input)
 
         # Create and start the container
+
         return self.start(client, self.create(client, sane_input))
 
     def start(self, client, cid):
