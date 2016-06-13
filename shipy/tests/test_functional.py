@@ -214,7 +214,7 @@ def test_docker_run_publish_all(client, shipy):
         assert client.inspect_container(container)['HostConfig']['PublishAllPorts']
 
 
-def test_docker_run_links(client, shipy, capsys):
+def test_docker_run_links(client, shipy):
     farg = '--link'
     fval = []
 
@@ -244,3 +244,61 @@ def test_docker_run_links(client, shipy, capsys):
         name, _, alias = ''.join(link.split(':')).split('/')[1:]
 
         assert '{}:{}'.format(name, alias) in ext_fval
+
+
+def test_docker_run_privileged(client, shipy):
+    farg = '--privileged'
+
+    container = run_template(client, shipy, farg=farg)
+
+    assert True == \
+           client.inspect_container(container)['HostConfig']['Privileged']
+
+
+def test_docker_run_dns(client, shipy):
+    farg = '--dns'
+    fval = ('8.8.8.8', '8.8.4.4')
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    assert [fval[0], fval[1]] == \
+           client.inspect_container(container)['HostConfig']['Dns']
+
+
+def test_docker_run_dns_search(client, shipy):
+    farg = '--dns-search'
+    fval = ('batman.com', 'brucewayne.com')
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    assert [fval[0], fval[1]] == \
+           client.inspect_container(container)['HostConfig']['DnsSearch']
+
+
+def test_docker_run_volumes_from(client, shipy):
+    farg = '--volumes-from'
+    fval = []
+
+    for _ in range(2):
+        fval.append(cn())
+
+    for volume_container in fval:
+        run_template(client, shipy, cn=volume_container)
+
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    assert fval == \
+           client.inspect_container(container)['HostConfig']['VolumesFrom']
+
+
+def test_docker_run_network_mode(client, shipy):
+
+    reuse_network_container = cn()
+    run_template(client, shipy, cn=reuse_network_container)
+
+    for mode in ['bridge', 'none', 'container:{}'.format(reuse_network_container), 'host']:
+        farg = '--net'
+        fval = (mode,)
+
+        container = run_template(client, shipy, farg=farg, fval=fval)
+
+        assert fval[0] == \
+               client.inspect_container(container)['HostConfig']['NetworkMode']

@@ -178,126 +178,128 @@ def run_parser(subparsers):
     )
     run_subparser.add_argument(
         '--dns',
+        action='append',
         dest='dns',
         help='set custom DNS servers'
     )
     run_subparser.add_argument(
         '--dns-search',
+        action='append',
         dest='dns_search',
         help='set custom DNS search domains'
     )
     run_subparser.add_argument(
         '--volumes-from',
+        action='append',
         dest='volumes_from',
         help='mount volumes from the specified container(s)'
     )
     run_subparser.add_argument(
         '--net',
         dest='network_mode',
-        type=str,
         help='set the Network mode for the container'
     )
-    run_subparser.add_argument(
-        '--restart',
-        dest='restart_policy',
-        help='Restart policy to apply when a container exits '
-             '(no, on-failure[:max-retry], always, unless-stopped)'
-    )
-    run_subparser.add_argument(
-        '--cap-add',
-        dest='cap_add',
-        help='add Linux capabilities'
-    )
-    run_subparser.add_argument(
-        '--cap-drop',
-        dest='cap_drop',
-        help='drop linux capabilities'
-    )
-    run_subparser.add_argument(
-        '--add-host',
-        dest='extra_hosts',
-        help='add a custom host-to-IP mapping (host:ip)'
-    )
-    run_subparser.add_argument(
-        '--read-only',
-        action='store_true',
-        dest='read_only',
-        help='mount the container\'s root filesystem as read only'
-    )
-    run_subparser.add_argument(
-        '--pid',
-        dest='pid_mode',
-        help='set the PID mode for the container\n'
-             'host: use the host\'s PID namespace inside the container'
-    )
-    run_subparser.add_argument(
-        '--ipc',
-        dest='ipc_mode',
-        help='set the IPC mode for the container'
-    )
-    run_subparser.add_argument(
-        '--security-opt',
-        dest='security_opt',
-        help='security options'
-    )
-    run_subparser.add_argument(
-        '--ulimit',
-        dest='ulimits',
-        help='ulimit options'
-    )
-    run_subparser.add_argument(
-        '--log-opt',
-        dest='log_config',
-        help='logging configuration of the container'
-    )
-    run_subparser.add_argument(
-        '-m',
-        '--memory',
-        dest='mem_limit',
-        help='memory limit (format: [number][optional unit], where '
-             'unit = b, k, m, or g)'
-    )
-    run_subparser.add_argument(
-        '--memory-swap',
-        dest='memswap_limit',
-        type=int,
-        help='a limit value equal to memory plus swap. Must be used with '
-             'the  -m (--memory) flag. The swap LIMIT should always be larger '
-             'than -m (--memory) value.'
-    )
-    run_subparser.add_argument(
-        '--memory-swappiness',
-        dest='mem_swappiness',
-        type=int,
-        help='tune a container\'s memory swappiness behavior. '
-             'Accepts an integer between 0 and 100.'
-    )
-    run_subparser.add_argument(
-        '--shm-size',
-        dest='shm_size',
-        help='size of /dev/shm'
-    )
-    run_subparser.add_argument(
-        '--cpu-period',
-        dest='cpu_period',
-        help='limit the CPU CFS (Completely Fair Scheduler) period'
-    )
-    run_subparser.add_argument(
-        '--group-add',
-        dest='group_add',
-        help='add additional groups to run as'
-    )
-    run_subparser.add_argument(
-        '--device',
-        dest='devices',
-        help='add a host device to the container '
-             '(e.g. --device=/dev/sdc:/dev/xvdc:rwm)'
-    )
-    run_subparser.add_argument(
-        '--tmpfs',
-        dest='tmpfs',
-        help='create a tmpfs mount'
-    )
+    # run_subparser.add_argument(
+    #     '--restart',
+    #     dest='restart_policy',
+    #     help='Restart policy to apply when a container exits '
+    #          '(no, on-failure[:max-retry], always, unless-stopped)'
+    # )
+    # run_subparser.add_argument(
+    #     '--cap-add',
+    #     dest='cap_add',
+    #     help='add Linux capabilities'
+    # )
+    # run_subparser.add_argument(
+    #     '--cap-drop',
+    #     dest='cap_drop',
+    #     help='drop linux capabilities'
+    # )
+    # run_subparser.add_argument(
+    #     '--add-host',
+    #     dest='extra_hosts',
+    #     help='add a custom host-to-IP mapping (host:ip)'
+    # )
+    # run_subparser.add_argument(
+    #     '--read-only',
+    #     action='store_true',
+    #     dest='read_only',
+    #     help='mount the container\'s root filesystem as read only'
+    # )
+    # run_subparser.add_argument(
+    #     '--pid',
+    #     dest='pid_mode',
+    #     help='set the PID mode for the container\n'
+    #          'host: use the host\'s PID namespace inside the container'
+    # )
+    # run_subparser.add_argument(
+    #     '--ipc',
+    #     dest='ipc_mode',
+    #     help='set the IPC mode for the container'
+    # )
+    # run_subparser.add_argument(
+    #     '--security-opt',
+    #     dest='security_opt',
+    #     help='security options'
+    # )
+    # run_subparser.add_argument(
+    #     '--ulimit',
+    #     dest='ulimits',
+    #     help='ulimit options'
+    # )
+    # run_subparser.add_argument(
+    #     '--log-opt',
+    #     dest='log_config',
+    #     help='logging configuration of the container'
+    # )
+    # run_subparser.add_argument(
+    #     '-m',
+    #     '--memory',
+    #     dest='mem_limit',
+    #     help='memory limit (format: [number][optional unit], where '
+    #          'unit = b, k, m, or g)'
+    # )
+    # run_subparser.add_argument(
+    #     '--memory-swap',
+    #     dest='memswap_limit',
+    #     type=int,
+    #     help='a limit value equal to memory plus swap. Must be used with '
+    #          'the  -m (--memory) flag. The swap LIMIT should always be larger '
+    #          'than -m (--memory) value.'
+    # )
+    # run_subparser.add_argument(
+    #     '--memory-swappiness',
+    #     dest='mem_swappiness',
+    #     type=int,
+    #     help='tune a container\'s memory swappiness behavior. '
+    #          'Accepts an integer between 0 and 100.'
+    # )
+    # run_subparser.add_argument(
+    #     '--shm-size',
+    #     dest='shm_size',
+    #     help='size of /dev/shm'
+    # )
+    # run_subparser.add_argument(
+    #     '--cpu-period',
+    #     dest='cpu_period',
+    #     help='limit the CPU CFS (Completely Fair Scheduler) period'
+    # )
+    # run_subparser.add_argument(
+    #     '--group-add',
+    #     dest='group_add',
+    #     help='add additional groups to run as'
+    # )
+    # run_subparser.add_argument(
+    #     '--device',
+    #     dest='devices',
+    #     help='add a host device to the container '
+    #          '(e.g. --device=/dev/sdc:/dev/xvdc:rwm)'
+    # )
+    # run_subparser.add_argument(
+    #     '--tmpfs',
+    #     dest='tmpfs',
+    #     help='create a tmpfs mount'
+    # )
 
 
 def ps_parser(subparsers):
