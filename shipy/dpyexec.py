@@ -174,8 +174,7 @@ class Shipy(object):
             logging.info('Name: {}, ID: {}, State: {}'.format(
                 container['Names'][0].split('/')[1],
                 container['Id'][:8],
-                container['State']
-                )
+                container['State'])
             )
 
         return ps_output
@@ -255,7 +254,7 @@ class Shipy(object):
         if '--file' in args:
             f_pos = args.index('--file')
 
-            with open(args[f_pos+1]) as f:
+            with open(args[f_pos + 1]) as f:
                 command = f.readline().split()
 
                 if command[0] == 'docker':
