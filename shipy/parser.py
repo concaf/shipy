@@ -48,13 +48,13 @@ def run_parser(subparsers):
         type=str,
         help='an entrypoint'
     )
-    # run_subparser.add_argument(
-    #     '-d',
-    #     '--detach',
-    #     action='store_true',
-    #     dest='detach',
-    #     help='detached mode, run container in the background'
-    # )
+    run_subparser.add_argument(
+        '-d',
+        '--detach',
+        action='store_true',
+        dest='detach',
+        help='detached mode, run container in the background'
+    )
     run_subparser.add_argument(
         '--hostname',
         dest='hostname',

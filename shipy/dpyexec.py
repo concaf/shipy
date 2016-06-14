@@ -171,11 +171,9 @@ class Shipy(object):
 
         ps_output = client.containers(**sane_input)
         for container in ps_output:
-            logging.info('Name: {}, ID: {}, State: {}'.format(
+            logging.info('Name: {}, ID: {}'.format(
                 container['Names'][0].split('/')[1],
-                container['Id'][:8],
-                container['State'])
-            )
+                container['Id'][:8]))
 
         return ps_output
 
