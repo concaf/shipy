@@ -1,7 +1,7 @@
 import docker
 import pytest
 from random import randint
-from shipy.dpyexec import Shipy
+from shipy.shipy.dpyexec import Shipy
 
 
 @pytest.fixture

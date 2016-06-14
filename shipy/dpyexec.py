@@ -2,7 +2,6 @@ from ast import literal_eval
 from docker import Client, errors
 import logging
 import parser
-from random import randint
 import sys
 
 
@@ -95,8 +94,7 @@ class Shipy(object):
 
                         # host_config port bindings
                         host_config_bindings[param].update(
-                                                    {container_port:
-                                                        host_bindings})
+                            {container_port: host_bindings})
 
                     # pass create_container bindings
                     args['ports'] = create_container_bindings
