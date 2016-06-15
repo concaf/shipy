@@ -265,7 +265,8 @@ def run_parser(subparsers):
     #     dest='memswap_limit',
     #     type=int,
     #     help='a limit value equal to memory plus swap. Must be used with '
-    #          'the  -m (--memory) flag. The swap LIMIT should always be larger '
+    #          'the  -m (--memory) flag. '
+    #          'The swap LIMIT should always be larger '
     #          'than -m (--memory) value.'
     # )
     # run_subparser.add_argument(

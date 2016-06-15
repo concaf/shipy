@@ -13,7 +13,7 @@ class Shipy(object):
         # remove unnecessary parameters from the args dictionary
         for param, value in args.items():
             if param not in ('mode', args['mode'], 'isverbose') and \
-                            value not in (None, False):
+                    value not in (None, False):
                 sane_input.update({param: value})
 
             if param == 'labels' and value is not None:
