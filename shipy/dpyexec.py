@@ -259,7 +259,6 @@ class Shipy(object):
                                       version.server,
                                       version.api))
 
-
     def shipy(self, args):
 
         "Check if input is from a file"

@@ -183,7 +183,8 @@ def test_docker_run_publish(client, shipy):
                                  farg=farg, fval=fval)
 
         exposed_ports = \
-            client.inspect_container(container)['Config']['ExposedPorts'].keys()
+            client.inspect_container(
+                container)['Config']['ExposedPorts'].keys()
         exposed_ports.sort()
         # print ext_fval, exposed_ports
         assert only_ports == exposed_ports
@@ -193,7 +194,8 @@ def test_docker_run_publish(client, shipy):
                     container)['HostConfig']['PortBindings'].items():
 
             if ncport[0]['HostIp']:
-                host_conf = '[\'{}\', \'{}\']'.format(ncport[0]['HostIp'], ncport[0]['HostPort'])
+                host_conf = '[\'{}\', \'{}\']'.format(
+                    ncport[0]['HostIp'], ncport[0]['HostPort'])
             elif ncport[0]['HostPort']:
                 host_conf = '[\'{}\']'.format(ncport[0]['HostPort'])
             else:
@@ -211,7 +213,8 @@ def test_docker_run_publish_all(client, shipy):
         container = run_template(client, shipy,
                                  farg=farg)
 
-        assert client.inspect_container(container)['HostConfig']['PublishAllPorts']
+        assert client.inspect_container(
+            container)['HostConfig']['PublishAllPorts']
 
 
 def test_docker_run_links(client, shipy):
@@ -294,7 +297,8 @@ def test_docker_run_network_mode(client, shipy):
     reuse_network_container = cn()
     run_template(client, shipy, cn=reuse_network_container)
 
-    for mode in ['bridge', 'none', 'container:{}'.format(reuse_network_container), 'host']:
+    for mode in ['bridge', 'none', 'container:{}'.format(
+            reuse_network_container), 'host']:
         farg = '--net'
         fval = (mode,)
 
@@ -311,4 +315,5 @@ def test_docker_run_detach(client, shipy):
         container = run_template(client, shipy,
                                  farg=farg)
 
-        assert not client.inspect_container(container)['Config']['AttachStdout']
+        assert not client.inspect_container(
+            container)['Config']['AttachStdout']
