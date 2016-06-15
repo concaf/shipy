@@ -1,6 +1,6 @@
 from ast import literal_eval
 from collections import namedtuple
-from docker import Client, errors, version as dpy_version
+from docker import Client, errors, version as dpy_version, constants
 import logging
 import parser
 import sys
@@ -248,16 +248,28 @@ class Shipy(object):
                 sane_input['container']))
 
     def version(self, client):
-        version_info = client.version()
-        version = namedtuple('version', 'dpy api server')
-        version = version(dpy=dpy_version,
-                          api=version_info['ApiVersion'],
-                          server=version_info['Version'])
+        version = namedtuple('version', 'dpy capi sapi server compatible')
+
+        try:
+            version_info = client.version()
+            version = version(dpy=dpy_version,
+                              capi=constants.DEFAULT_DOCKER_API_VERSION,
+                              sapi=version_info['ApiVersion'],
+                              server=version_info['Version'],
+                              compatible=True)
+
+        except errors.APIError:
+            version = version(dpy=dpy_version,
+                              capi=constants.DEFAULT_DOCKER_API_VERSION,
+                              sapi=client._retrieve_server_version(),
+                              server=None,
+                              compatible=False)
+
         logging.info('\ndocker-py: {}\n'
-                     'Server: {}\n'
-                     'API: {}'.format(version.dpy,
-                                      version.server,
-                                      version.api))
+                     'Client API: {}\n'
+                     'Server API: {}'.format(version.dpy,
+                                             version.capi,
+                                             version.sapi))
         return version
 
     def shipy(self, args):
