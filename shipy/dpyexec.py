@@ -1,5 +1,6 @@
 from ast import literal_eval
-from docker import Client, errors
+from collections import namedtuple
+from docker import Client, errors, version as dpy_version
 import logging
 import parser
 import sys
@@ -246,6 +247,19 @@ class Shipy(object):
             logging.info('Could not find container {}'.format(
                 sane_input['container']))
 
+    def version(self, client):
+        version_info = client.version()
+        version = namedtuple('version', 'dpy api server')
+        version = version(dpy=dpy_version,
+                       api=version_info['ApiVersion'],
+                       server=version_info['Version'])
+        logging.info('\ndocker-py: {}\n'
+                     'Server: {}\n'
+                     'API: {}'.format(version.dpy,
+                                      version.server,
+                                      version.api))
+
+
     def shipy(self, args):
 
         "Check if input is from a file"
@@ -296,3 +310,6 @@ class Shipy(object):
 
         if sh_args.mode == 'restart':
             return self.restart(docker_client, sane_input)
+
+        if sh_args.mode == 'version':
+            return self.version(docker_client)

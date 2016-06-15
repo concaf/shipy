@@ -19,6 +19,7 @@ def define_parsers():
     rm_parser(shipy_subparsers)
     pull_parser(shipy_subparsers)
     restart_parser(shipy_subparsers)
+    version_parser(shipy_subparsers)
 
     return shipy_parser
 
@@ -400,4 +401,13 @@ def restart_parser(subparsers):
     restart_parser.add_argument(
         'container',
         help='the container image to pull'
+    )
+
+
+def version_parser(subparsers):
+    version_parser = subparsers.add_parser('version')
+    version_parser.add_argument(
+        'version',
+        action='store_true',
+        help='show the docker version information'
     )
