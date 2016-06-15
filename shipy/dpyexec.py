@@ -258,6 +258,7 @@ class Shipy(object):
                      'API: {}'.format(version.dpy,
                                       version.server,
                                       version.api))
+        return version
 
     def shipy(self, args):
 
