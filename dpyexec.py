@@ -8,6 +8,13 @@ import sys
 
 class Shipy(object):
     def _sanify(self, args):
+        """
+        This is where all the passed arguments come after getting parsed by
+        Argparse. This function removes all the noise from the arguments,
+        like removing None, False and other irrelevant parameters.
+        :param args: parsed arguments
+        :return: an updated dict of cleaned up arguments
+        """
         sane_input = {}
 
         # remove unnecessary parameters from the args dictionary
@@ -25,6 +32,16 @@ class Shipy(object):
         return sane_input
 
     def _host_config_gen(self, client, args):
+        """
+        Parameters which are to be passed to client.create_container()
+        as a Host Config end up here and get processed. Most of the arguments
+        do not require any tinkering, but some, like port bindings, volume
+        bindings and links require processing, which is done here.
+        :param client: docker.Client instance
+        :param args: parsed dict of parameters passed to shipy
+        :return: updated dict of args and the host config created from the
+        passed args
+        """
         host_config_params = {}
         parameters = [
             'binds',
@@ -133,6 +150,13 @@ class Shipy(object):
         return args, host_config
 
     def run(self, client, sane_input):
+        """
+        shipy equivalent of docker run.
+        Pulls the image, creates the container, and then runs the container.
+        :param client: docker.Client instance
+        :param sane_input: parsed and sanified input to shipy
+        :return: ID of the container created
+        """
 
         # pull image if it does not exist
         if not client.images(name=sane_input['image']):
@@ -144,6 +168,13 @@ class Shipy(object):
         return self.start(client, self.create(client, sane_input))
 
     def start(self, client, cid):
+        """
+        shipy equivalent of docker start.
+        Starts a stopped container.
+        :param client: docker.Client instance
+        :param cid: ID of the container to be started
+        :return: ID of the started container, False otherwise
+        """
         sane_start = {}
         sane_start.update({'container': cid})
         try:
@@ -155,6 +186,13 @@ class Shipy(object):
             return False
 
     def create(self, client, sane_create):
+        """
+        shipy equivalent of docker create.
+        Creates a container with the supplied config.
+        :param client: docker.Client instance
+        :param sane_create: parsed and sanified input to shipy
+        :return: ID of the container created
+        """
         if len(sane_create['image'].split(':')) == 1:
             logging.debug('No tag provided, using tag latest')
             sane_create.update({'image': '{}:latest'.
@@ -169,6 +207,13 @@ class Shipy(object):
         return container_info['Id']
 
     def ps(self, client, sane_input):
+        """
+        shipy equivalent of docker ps.
+        Lists the containers on the system.
+        :param client: docker.Client instance
+        :param sane_input: parsed and sanified input to shipy
+        :return: currently same output as client.containers(**kwargs)
+        """
 
         ps_output = client.containers(**sane_input)
         for container in ps_output:
@@ -179,6 +224,13 @@ class Shipy(object):
         return ps_output
 
     def kill(self, client, sane_input):
+        """
+        shipy equivalent of docker kill.
+        Kills a running container.
+        :param client: docker.Client instance
+        :param sane_input: parsed and sanified input to shipy
+        :return: True if container killed, False otherwise
+        """
 
         try:
             client.kill(**sane_input)
@@ -190,6 +242,13 @@ class Shipy(object):
             return False
 
     def stop(self, client, sane_input):
+        """
+        shipy equivalent of docker stop.
+        Stops a running container.
+        :param client: docker.Client instance
+        :param sane_input: parsed and sanified input to shipy
+        :return: True if container stopped, False otherwise
+        """
 
         try:
             client.stop(**sane_input)
@@ -202,18 +261,36 @@ class Shipy(object):
             return False
 
     def rm(self, client, sane_input):
+        """
+        shipy equivalent of docker rm.
+        Removes the given container.
+        :param client: docker.Client instance
+        :param sane_input: parsed and sanified input to shipy
+        :return: True if container removed, False otherwise
+        """
 
         try:
             client.remove_container(**sane_input)
             logging.info('Removed container {}'
                          .format(sane_input['container']))
+            return True
         except errors.NotFound:
             logging.info('Container {} not found.'
                          .format(sane_input['container']))
+            return False
         except Exception as e:
             logging.info(e.message)
+            return False
 
     def pull(self, client, sane_input):
+        """
+        shipy equivalent of docker pull.
+        Pulls a docker image if it does not exist.
+        Adds tag 'latest' if no tag specified.
+        :param client: docker.Client instance
+        :param sane_input: parsed and sanified input to shipy
+        :return: True if image pulled, False otherwise
+        """
 
         # add tag to the image name if not provided by the user
         if len(sane_input['image'].split(':')) == 1:
@@ -237,17 +314,38 @@ class Shipy(object):
             return False
 
     def restart(self, client, sane_input):
+        """
+        shipy equivalent of docker restart.
+        Restarts a running docker container.
+        :param client: docker.Client instance
+        :param sane_input: parsed and sanified input to shipy
+        :return: True if container restarted, False otherwise
+        """
 
         try:
             client.restart(**sane_input)
             logging.info('Restarted container {}'
                          .format(sane_input['container']))
+            return True
 
         except errors.NotFound:
             logging.info('Could not find container {}'.format(
                 sane_input['container']))
+            return False
 
     def version(self, client):
+        """
+        shipy equivalent of docker version.
+        If
+        :param client: docker.Client instance
+        :return: 'version' object
+        version.dpy - docker-py version
+        version.capi - Client API version
+        version.sapi - Server API version
+        version.server - Server version, None if incompatible
+        version.compatible - bool - if client and server are compatible or not
+        """
+
         version = namedtuple('version', 'dpy capi sapi server compatible')
 
         try:
@@ -273,6 +371,12 @@ class Shipy(object):
         return version
 
     def shipy(self, args):
+        """
+        The entrypoint for shipy, takes in the arguments from the user,
+        processes them, refines them, and delegates to respective functions.
+        :param args: user arguments
+        :return: whatever the called function returns
+        """
 
         "Check if input is from a file"
         if '--file' in args:
