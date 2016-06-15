@@ -12,13 +12,22 @@ def shipy():
 @pytest.fixture(scope='function')
 def client(request):
     client = docker.Client(base_url='unix://var/run/docker.sock')
+    images = []
+    for image in client.images():
+        images.append(image['RepoTags'][0].split('/')[-1])
+
+    if 'busybox:latest' not in images:
+        client.pull('busybox:latest')
 
     def container_fin():
         for container in client.containers(all=True):
             name = str(container['Names'][0])[1:]
             if name.startswith('bruce') and \
                     name.endswith('wayne'):
-                client.remove_container(name, force=True)
+                try:
+                    client.remove_container(name, force=True)
+                except docker.errors.NotFound:
+                    pass
 
     request.addfinalizer(container_fin)
     return client
