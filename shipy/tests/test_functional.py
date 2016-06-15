@@ -302,3 +302,13 @@ def test_docker_run_network_mode(client, shipy):
 
         assert fval[0] == \
                client.inspect_container(container)['HostConfig']['NetworkMode']
+
+
+def test_docker_run_detach(client, shipy):
+    argument = ('-d', '--detach')
+
+    for farg in argument:
+        container = run_template(client, shipy,
+                                 farg=farg)
+
+        assert not client.inspect_container(container)['Config']['AttachStdout']

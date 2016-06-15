@@ -1,7 +1,7 @@
 import docker
 import pytest
 from random import randint
-from atomicapp.providers.lib.shipy.shipy.dpyexec import Shipy
+from shipy.shipy.dpyexec import Shipy
 
 
 @pytest.fixture
