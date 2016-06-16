@@ -126,8 +126,8 @@ optional arguments:
   -h, --help  show this help message and exit
 ```
  
- #### stop
- ```
+#### stop
+```
 usage: shipy stop [-h]  container
 
 positional arguments:
@@ -136,10 +136,10 @@ positional arguments:
 
 optional arguments:
   -h, --help  show this help message and exit
- ```
+```
  
- #### rm
- ```
+#### rm
+```
  usage: shipy rm [-h] [-f] [-v] [-l]  container
 
 positional arguments:
