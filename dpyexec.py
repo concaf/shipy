@@ -365,9 +365,11 @@ class Shipy(object):
 
         logging.info('\ndocker-py: {}\n'
                      'Client API: {}\n'
-                     'Server API: {}'.format(version.dpy,
-                                             version.capi,
-                                             version.sapi))
+                     'Server API: {}\n'
+                     'Compatibility: {}'.format(version.dpy,
+                                                version.capi,
+                                                version.sapi,
+                                                version.compatible))
         return version
 
     def shipy(self, args):
