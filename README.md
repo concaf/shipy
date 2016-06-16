@@ -13,6 +13,8 @@ shipy will soon be made into a python package on `pip`, `.rpm` and `.deb`, keep 
 Till then just clone this repository,
 `git clone https://github.com/containscafeine/shipy.git` and you have it.
 
+You need to have a `docker-py` version that is compatible with your docker engine version.
+
 ##### Usage
 Clone the repository in your project root and you should be able to import it and run as follows:
 
