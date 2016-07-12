@@ -31,6 +31,76 @@ class Shipy(object):
                 sane_input.update({param: label_dict})
         return sane_input
 
+    def _host_config_port_bindings(self, args, param, host_config_params):
+        create_container_bindings = []
+        host_config_bindings = {param: {}}
+        # setting container port
+        for bindings in args[param]:
+            ports = bindings.split(':')
+            container_port = ports[-1]
+            host_params = ports[:-1]
+
+            if len(host_params) == 0:
+                host_bindings = None
+            elif len(host_params) == 1:
+                host_bindings = ports[:-1]
+            elif len(host_params) == 2:
+                host_bindings = tuple(ports[:-1])
+            else:
+                raise Exception
+
+            # add /tcp as default for container port
+            if container_port[-3:] not in ('tcp', 'udp'):
+                container_port = '{}/tcp'.format(container_port)
+            protocol = container_port[-3:]
+            only_port = container_port[:-4]
+            # append to create_container bindings
+            create_container_bindings.append((only_port, protocol))
+
+            # host_config port bindings
+            host_config_bindings[param].update(
+                {container_port: host_bindings})
+
+        # pass create_container bindings
+        args['ports'] = create_container_bindings
+
+        # pass host_config bindinds
+        host_config_params[param] = host_config_bindings[param]
+
+        del args[param]
+        return args, host_config_params
+
+    def _host_config_binds(self, args, param, host_config_params):
+        volume_bindings = []
+        for bindings in host_config_params[param]:
+            volume_bindings.append(bindings.split(':')[0])
+        args.update({'volumes': volume_bindings})
+        return args
+
+    def _host_config_links(self, param, host_config_params):
+        final_links = []
+        links = host_config_params[param]
+
+        for link in links:
+            link_split = link.split(':')
+
+            if len(link_split) == 1:
+                final_links.append((link_split[0], link_split[0]))
+            else:
+                final_links.append((link_split[0], link_split[1]))
+
+        host_config_params[param] = final_links
+        return host_config_params
+
+    def _host_config_restart_policy(self, param, host_config_params):
+        restart_dict = {}
+        restart_opts = host_config_params[param].split(':')
+        restart_dict['Name'] = restart_opts[0]
+        if restart_opts[0] == 'on-failure' and len(restart_opts) == 2:
+            restart_dict['MaximumRetryCount'] = int(restart_opts[1])
+        host_config_params[param] = restart_dict
+        return host_config_params
+
     def _host_config_gen(self, client, args):
         """
         Parameters which are to be passed to client.create_container()
@@ -85,62 +155,18 @@ class Shipy(object):
                     del args[param]
 
                 if param == 'port_bindings':
-                    create_container_bindings = []
-                    host_config_bindings = {param: {}}
-                    # setting container port
-                    for bindings in args[param]:
-                        ports = bindings.split(':')
-                        container_port = ports[-1]
-                        host_params = ports[:-1]
-
-                        if len(host_params) == 0:
-                            host_bindings = None
-                        elif len(host_params) == 1:
-                            host_bindings = ports[:-1]
-                        elif len(host_params) == 2:
-                            host_bindings = tuple(ports[:-1])
-                        else:
-                            raise Exception
-
-                        # add /tcp as default for container port
-                        if container_port[-3:] not in ('tcp', 'udp'):
-                            container_port = '{}/tcp'.format(container_port)
-                        protocol = container_port[-3:]
-                        only_port = container_port[:-4]
-                        # append to create_container bindings
-                        create_container_bindings.append((only_port, protocol))
-
-                        # host_config port bindings
-                        host_config_bindings[param].update(
-                            {container_port: host_bindings})
-
-                    # pass create_container bindings
-                    args['ports'] = create_container_bindings
-
-                    # pass host_config bindinds
-                    host_config_params[param] = host_config_bindings[param]
-
-                    del args[param]
+                    args, host_config_params = self._host_config_port_bindings(
+                        args, param, host_config_params
+                    )
 
                 if param == 'binds':
-                    volume_bindings = []
-                    for bindings in host_config_params[param]:
-                        volume_bindings.append(bindings.split(':')[0])
-                    args.update({'volumes': volume_bindings})
+                    args = self._host_config_binds(args, param, host_config_params)
 
                 if param == 'links':
-                    final_links = []
-                    links = host_config_params[param]
+                    self._host_config_links(param, host_config_params)
 
-                    for link in links:
-                        link_split = link.split(':')
-
-                        if len(link_split) == 1:
-                            final_links.append((link_split[0], link_split[0]))
-                        else:
-                            final_links.append((link_split[0], link_split[1]))
-
-                    host_config_params[param] = final_links
+                if param == 'restart_policy':
+                    self._host_config_restart_policy(param, host_config_params)
 
         if len(host_config_params) > 0:
             logging.debug('Creating host_config.')

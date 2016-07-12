@@ -200,12 +200,12 @@ def run_parser(subparsers):
         dest='network_mode',
         help='set the Network mode for the container'
     )
-    # run_subparser.add_argument(
-    #     '--restart',
-    #     dest='restart_policy',
-    #     help='Restart policy to apply when a container exits '
-    #          '(no, on-failure[:max-retry], always, unless-stopped)'
-    # )
+    run_subparser.add_argument(
+        '--restart',
+        dest='restart_policy',
+        help='Restart policy to apply when a container exits '
+             '(no, on-failure[:max-retry], always, unless-stopped)'
+    )
     # run_subparser.add_argument(
     #     '--cap-add',
     #     dest='cap_add',

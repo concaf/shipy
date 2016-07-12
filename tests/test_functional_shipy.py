@@ -317,3 +317,16 @@ def test_docker_run_detach(client, shipy):
 
         assert not client.inspect_container(
             container)['Config']['AttachStdout']
+
+
+def test_docker_restart_policy_on_failure(client, shipy):
+    farg = '--restart'
+    for fval in (('no',), ('on-failure',), ('on-failure:4',), ('always',), ('unless-stopped',)):
+        container = run_template(client, shipy, farg=farg, fval=fval)
+        inspect_output = client.inspect_container(container)['HostConfig']['RestartPolicy']
+        fval_split = fval[0].split(':')
+
+        assert fval_split[0] == inspect_output['Name']
+
+        if fval_split[0] == 'on-failure' and len(fval_split) == 2:
+            assert int(fval_split[1]) == inspect_output['MaximumRetryCount']
