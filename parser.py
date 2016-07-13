@@ -206,16 +206,18 @@ def run_parser(subparsers):
         help='Restart policy to apply when a container exits '
              '(no, on-failure[:max-retry], always, unless-stopped)'
     )
-    # run_subparser.add_argument(
-    #     '--cap-add',
-    #     dest='cap_add',
-    #     help='add Linux capabilities'
-    # )
-    # run_subparser.add_argument(
-    #     '--cap-drop',
-    #     dest='cap_drop',
-    #     help='drop linux capabilities'
-    # )
+    run_subparser.add_argument(
+        '--cap-add',
+        action='append',
+        dest='cap_add',
+        help='add Linux capabilities'
+    )
+    run_subparser.add_argument(
+        '--cap-drop',
+        action='append',
+        dest='cap_drop',
+        help='drop linux capabilities'
+    )
     # run_subparser.add_argument(
     #     '--add-host',
     #     dest='extra_hosts',

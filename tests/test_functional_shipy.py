@@ -330,3 +330,21 @@ def test_docker_restart_policy_on_failure(client, shipy):
 
         if fval_split[0] == 'on-failure' and len(fval_split) == 2:
             assert int(fval_split[1]) == inspect_output['MaximumRetryCount']
+
+
+def test_docker_run_cap_add(client, shipy):
+    farg = '--cap-add'
+    fval = ('SYS_ADMIN', 'SYS_TIME')
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    assert [fval[0], fval[1]] == \
+           client.inspect_container(container)['HostConfig']['CapAdd']
+
+    
+def test_docker_run_cap_drop(client, shipy):
+    farg = '--cap-drop'
+    fval = ('SYS_ADMIN', 'SYS_TIME')
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    assert [fval[0], fval[1]] == \
+           client.inspect_container(container)['HostConfig']['CapDrop']
