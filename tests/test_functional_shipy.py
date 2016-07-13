@@ -366,3 +366,12 @@ def test_docker_run_read_only(client, shipy):
 
     assert True == \
            client.inspect_container(container)['HostConfig']['ReadonlyRootfs']
+
+
+def test_docker_run_pid(client, shipy):
+    farg = '--pid'
+    fval = ('host',)
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    assert fval[0] == \
+           client.inspect_container(container)['HostConfig']['PidMode']

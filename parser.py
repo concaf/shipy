@@ -230,12 +230,13 @@ def run_parser(subparsers):
         dest='read_only',
         help='mount the container\'s root filesystem as read only'
     )
-    # run_subparser.add_argument(
-    #     '--pid',
-    #     dest='pid_mode',
-    #     help='set the PID mode for the container\n'
-    #          'host: use the host\'s PID namespace inside the container'
-    # )
+    run_subparser.add_argument(
+        '--pid',
+        dest='pid_mode',
+        choices=['host'],
+        help='set the PID mode for the container\n'
+             'host: use the host\'s PID namespace inside the container'
+    )
     # run_subparser.add_argument(
     #     '--ipc',
     #     dest='ipc_mode',
