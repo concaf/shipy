@@ -391,3 +391,12 @@ def test_docker_run_ipc(client, shipy):
 
         assert fval[0] == \
             client.inspect_container(container)['HostConfig']['IpcMode']
+
+
+def test_docker_run_security_opt(client, shipy):
+    farg = '--security-opt'
+    fval = ('label=type:svirt_apache_t', 'label=level:s0:c100,c200')
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    assert [fval[0], fval[1]] == \
+           client.inspect_container(container)['HostConfig']['SecurityOpt']

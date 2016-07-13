@@ -242,11 +242,12 @@ def run_parser(subparsers):
         dest='ipc_mode',
         help='set the IPC mode for the container'
     )
-    # run_subparser.add_argument(
-    #     '--security-opt',
-    #     dest='security_opt',
-    #     help='security options'
-    # )
+    run_subparser.add_argument(
+        '--security-opt',
+        action='append',
+        dest='security_opt',
+        help='security options'
+    )
     # run_subparser.add_argument(
     #     '--ulimit',
     #     dest='ulimits',
