@@ -319,7 +319,7 @@ def test_docker_run_detach(client, shipy):
             container)['Config']['AttachStdout']
 
 
-def test_docker_restart_policy_on_failure(client, shipy):
+def test_docker_run_restart_policy_on_failure(client, shipy):
     farg = '--restart'
     for fval in (('no',), ('on-failure',), ('on-failure:4',), ('always',), ('unless-stopped',)):
         container = run_template(client, shipy, farg=farg, fval=fval)
@@ -375,3 +375,19 @@ def test_docker_run_pid(client, shipy):
 
     assert fval[0] == \
            client.inspect_container(container)['HostConfig']['PidMode']
+
+
+def test_docker_run_ipc(client, shipy):
+    farg = '--ipc'
+    ipc_cn = cn()
+    for fval in (('host',),
+                 ('container:{}'.format(ipc_cn),)
+                 ):
+
+        if fval[0].split(':')[0] == 'container':
+            run_template(client, shipy, cn=ipc_cn)
+
+        container = run_template(client, shipy, farg=farg, fval=fval)
+
+        assert fval[0] == \
+            client.inspect_container(container)['HostConfig']['IpcMode']

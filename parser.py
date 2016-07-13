@@ -237,11 +237,11 @@ def run_parser(subparsers):
         help='set the PID mode for the container\n'
              'host: use the host\'s PID namespace inside the container'
     )
-    # run_subparser.add_argument(
-    #     '--ipc',
-    #     dest='ipc_mode',
-    #     help='set the IPC mode for the container'
-    # )
+    run_subparser.add_argument(
+        '--ipc',
+        dest='ipc_mode',
+        help='set the IPC mode for the container'
+    )
     # run_subparser.add_argument(
     #     '--security-opt',
     #     dest='security_opt',
