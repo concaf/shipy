@@ -357,3 +357,12 @@ def test_docker_run_add_host(client, shipy):
 
     assert [fval[0], fval[1]] == \
            client.inspect_container(container)['HostConfig']['ExtraHosts']
+
+
+def test_docker_run_read_only(client, shipy):
+    farg = '--read-only'
+
+    container = run_template(client, shipy, farg=farg)
+
+    assert True == \
+           client.inspect_container(container)['HostConfig']['ReadonlyRootfs']

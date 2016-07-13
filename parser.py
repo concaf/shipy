@@ -224,12 +224,12 @@ def run_parser(subparsers):
         dest='extra_hosts',
         help='Add a line to /etc/hosts (host:IP)'
     )
-    # run_subparser.add_argument(
-    #     '--read-only',
-    #     action='store_true',
-    #     dest='read_only',
-    #     help='mount the container\'s root filesystem as read only'
-    # )
+    run_subparser.add_argument(
+        '--read-only',
+        action='store_true',
+        dest='read_only',
+        help='mount the container\'s root filesystem as read only'
+    )
     # run_subparser.add_argument(
     #     '--pid',
     #     dest='pid_mode',
