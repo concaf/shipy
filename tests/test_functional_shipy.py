@@ -340,7 +340,7 @@ def test_docker_run_cap_add(client, shipy):
     assert [fval[0], fval[1]] == \
            client.inspect_container(container)['HostConfig']['CapAdd']
 
-    
+
 def test_docker_run_cap_drop(client, shipy):
     farg = '--cap-drop'
     fval = ('SYS_ADMIN', 'SYS_TIME')
@@ -348,3 +348,12 @@ def test_docker_run_cap_drop(client, shipy):
 
     assert [fval[0], fval[1]] == \
            client.inspect_container(container)['HostConfig']['CapDrop']
+
+
+def test_docker_run_add_host(client, shipy):
+    farg = '--add-host'
+    fval = ('batman.example:10.0.0.1', 'wayne.manor:10.0.0.2')
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    assert [fval[0], fval[1]] == \
+           client.inspect_container(container)['HostConfig']['ExtraHosts']

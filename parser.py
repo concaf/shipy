@@ -218,11 +218,12 @@ def run_parser(subparsers):
         dest='cap_drop',
         help='drop linux capabilities'
     )
-    # run_subparser.add_argument(
-    #     '--add-host',
-    #     dest='extra_hosts',
-    #     help='add a custom host-to-IP mapping (host:ip)'
-    # )
+    run_subparser.add_argument(
+        '--add-host',
+        action='append',
+        dest='extra_hosts',
+        help='Add a line to /etc/hosts (host:IP)'
+    )
     # run_subparser.add_argument(
     #     '--read-only',
     #     action='store_true',
