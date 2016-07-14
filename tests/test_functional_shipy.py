@@ -1,6 +1,7 @@
 import pytest
 from utils import cinput, client, shipy, container_name as cn,\
     test_docker_run_template as run_template
+from hurry.filesize import size
 
 cimage = 'busybox'
 cargs = 'ping 127.0.0.1'
@@ -447,3 +448,12 @@ def test_docker_run_log_opt(client, shipy):
         assert v == \
             client.inspect_container(container)[
                 'HostConfig']['LogConfig']['Config'][k]
+
+
+def test_docker_run_memory(client, shipy):
+    farg = '--memory'
+    fval = ('1G',)
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    assert fval[0] == \
+           size(client.inspect_container(container)['HostConfig']['Memory'])

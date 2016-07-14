@@ -266,13 +266,13 @@ def run_parser(subparsers):
         dest='log_opt',
         help='logging configuration of the container'
     )
-    # run_subparser.add_argument(
-    #     '-m',
-    #     '--memory',
-    #     dest='mem_limit',
-    #     help='memory limit (format: [number][optional unit], where '
-    #          'unit = b, k, m, or g)'
-    # )
+    run_subparser.add_argument(
+        '-m',
+        '--memory',
+        dest='mem_limit',
+        help='memory limit (format: [number][optional unit], where '
+             'unit = b, k, m, or g)'
+    )
     # run_subparser.add_argument(
     #     '--memory-swap',
     #     dest='memswap_limit',
