@@ -114,6 +114,23 @@ class Shipy(object):
 
         host_config_params[param] = ulimit_list
 
+    def _host_config_log_driver(self, param, host_config_params):
+        host_config_params.setdefault('log_config', {})
+        host_config_params['log_config'].update(
+            {'Type': host_config_params[param]})
+        del host_config_params[param]
+
+    def _host_config_log_opt(self, param, host_config_params):
+        host_config_params.setdefault('log_config', {})
+        host_config_params['log_config'].setdefault('Config', {})
+
+        for log_opt in host_config_params[param]:
+            k, v = log_opt.split('=')
+            log_opt = {k: v}
+            host_config_params['log_config']['Config'].update(log_opt)
+
+        del host_config_params[param]
+
     def _host_config_gen(self, client, args):
         """
         Parameters which are to be passed to client.create_container()
@@ -148,7 +165,8 @@ class Shipy(object):
             'ipc_mode',
             'security_opt',
             'ulimits',
-            'log_config',
+            'log_driver', # merges in log_config
+            'log_opt', # merges in log_config
             'mem_limit',
             'memswap_limit',
             'mem_swappiness',
@@ -182,6 +200,12 @@ class Shipy(object):
 
                 if param == 'ulimits':
                     self._host_config_ulimits(param, host_config_params)
+
+                if param == 'log_driver':
+                    self._host_config_log_driver(param, host_config_params)
+
+                if param == 'log_opt':
+                    self._host_config_log_opt(param, host_config_params)
 
         if len(host_config_params) > 0:
             logging.debug('Creating host_config.')

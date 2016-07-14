@@ -47,6 +47,8 @@ def test_docker_run_template(client,
                              shipy,
                              farg=' ',
                              fval=' ',
+                             sarg=' ',
+                             sval=' ',
                              cimage='busybox',
                              cargs='ping 127.0.0.1',
                              cn=None):
@@ -60,6 +62,6 @@ def test_docker_run_template(client,
         arg_val = '{} {} {}'.format(arg_val, farg, value)
 
     container = shipy.shipy(
-        cinput('run {} --name {} {} {}'
-               .format(arg_val, cn, cimage, cargs)))
+        cinput('run {} {} {} --name {} {} {}'
+               .format(arg_val, sarg, sval, cn, cimage, cargs)))
     return container

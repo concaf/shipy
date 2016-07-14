@@ -417,3 +417,33 @@ def test_docker_run_ulimit(client, shipy):
         assert u['Name'] == name
         assert u['Soft'] == soft
         assert u['Hard'] == hard
+
+
+def test_docker_run_log_driver(client, shipy):
+    farg = '--log-driver'
+    fval = ('syslog',)
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    assert fval[0] == \
+           client.inspect_container(container)['HostConfig']['LogConfig']['Type']
+
+
+def test_docker_run_log_opt(client, shipy):
+    farg = '--log-opt'
+    fval = ('tag=batman', 'syslog-format=rfc3164')
+
+    sarg = '--log-driver'
+    sval = 'syslog'
+
+    container = run_template(client, shipy, farg=farg, fval=fval,
+                             sarg=sarg, sval=sval)
+
+    assert sval == \
+           client.inspect_container(container)[
+               'HostConfig']['LogConfig']['Type']
+
+    for opt in fval:
+        k, v = opt.split('=')
+        assert v == \
+            client.inspect_container(container)[
+                'HostConfig']['LogConfig']['Config'][k]

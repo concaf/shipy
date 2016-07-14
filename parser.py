@@ -255,11 +255,17 @@ def run_parser(subparsers):
         help='ulimit options, --ulimit is specified with a soft and hard limit'
              '\nas such: <type>=<soft limit>[:<hard limit>]'
     )
-    # run_subparser.add_argument(
-    #     '--log-opt',
-    #     dest='log_config',
-    #     help='logging configuration of the container'
-    # )
+    run_subparser.add_argument(
+        '--log-driver',
+        dest='log_driver',
+        help='logging configuration of the container'
+    )
+    run_subparser.add_argument(
+        '--log-opt',
+        action='append',
+        dest='log_opt',
+        help='logging configuration of the container'
+    )
     # run_subparser.add_argument(
     #     '-m',
     #     '--memory',
