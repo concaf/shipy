@@ -452,8 +452,94 @@ def test_docker_run_log_opt(client, shipy):
 
 def test_docker_run_memory(client, shipy):
     farg = '--memory'
-    fval = ('1G',)
+    fval = ('100M',)
     container = run_template(client, shipy, farg=farg, fval=fval)
 
     assert fval[0] == \
            size(client.inspect_container(container)['HostConfig']['Memory'])
+
+
+def test_docker_run_memory_swap(client, shipy):
+    farg = '--memory-swap'
+    fval = ('110M',)
+
+    sarg = '--memory'
+    sval = '100M'
+    container = run_template(client, shipy, farg=farg, fval=fval,
+                             sarg=sarg, sval=sval)
+
+    assert sval == \
+           size(client.inspect_container(container)['HostConfig']['Memory'])
+
+    assert fval[0] == \
+           size(client.inspect_container(container)['HostConfig']['MemorySwap'])
+
+
+def test_docker_run_memory_swappiness(client, shipy):
+    farg = '--memory-swappiness'
+    fval = (42,)
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    assert fval[0] == \
+           client.inspect_container(container)['HostConfig']['MemorySwappiness']
+
+
+def test_docker_run_shm_size(client, shipy):
+    farg = '--shm-size'
+    fval = ('100M',)
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    assert fval[0] == \
+           size(client.inspect_container(container)['HostConfig']['ShmSize'])
+
+
+def test_docker_run_cpu_period(client, shipy):
+    farg = '--cpu-period'
+    fval = ('1000',)
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    assert fval[0] == \
+           client.inspect_container(container)['HostConfig']['CpuPeriod']
+
+
+def test_docker_run_group_add(client, shipy):
+    farg = '--group-add'
+    fval = ('nobody',)
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    assert fval[0] == \
+           client.inspect_container(container)['HostConfig']['GroupAdd']
+
+
+def test_docker_run_device(client, shipy):
+    farg = '--device'
+    fval = ('/dev/null:/dev/sda2:rwm', '/dev/zero:/dev/sda3:m')
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    devices = client.inspect_container(container)['HostConfig']['Devices']
+
+    chost_path, ccontainer_path, cperms = [], [], []
+
+    for device in devices:
+        chost_path.append(device['PathOnHost'])
+        ccontainer_path.append(device['PathInContainer'])
+        cperms.append(device['CgroupPermissions'])
+
+    for dev in fval:
+        host_path, container_path, perms = dev.split(':')
+
+        assert host_path in chost_path
+        assert container_path in ccontainer_path
+        assert perms in cperms
+
+
+def test_docker_run_tmpfs(client, shipy):
+    farg = '--tmpfs'
+    fval = ('/run/:rw,noexec,nosuid,size=65536k', '/mnt/:size=3G,uid=1000')
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    tmpfs = client.inspect_container(container)['HostConfig']['Tmpfs']
+
+    for val in fval:
+        mount, args = val.split(':')
+        assert tmpfs[mount] == args

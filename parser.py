@@ -273,48 +273,50 @@ def run_parser(subparsers):
         help='memory limit (format: [number][optional unit], where '
              'unit = b, k, m, or g)'
     )
-    # run_subparser.add_argument(
-    #     '--memory-swap',
-    #     dest='memswap_limit',
-    #     type=int,
-    #     help='a limit value equal to memory plus swap. Must be used with '
-    #          'the  -m (--memory) flag. '
-    #          'The swap LIMIT should always be larger '
-    #          'than -m (--memory) value.'
-    # )
-    # run_subparser.add_argument(
-    #     '--memory-swappiness',
-    #     dest='mem_swappiness',
-    #     type=int,
-    #     help='tune a container\'s memory swappiness behavior. '
-    #          'Accepts an integer between 0 and 100.'
-    # )
-    # run_subparser.add_argument(
-    #     '--shm-size',
-    #     dest='shm_size',
-    #     help='size of /dev/shm'
-    # )
-    # run_subparser.add_argument(
-    #     '--cpu-period',
-    #     dest='cpu_period',
-    #     help='limit the CPU CFS (Completely Fair Scheduler) period'
-    # )
-    # run_subparser.add_argument(
-    #     '--group-add',
-    #     dest='group_add',
-    #     help='add additional groups to run as'
-    # )
-    # run_subparser.add_argument(
-    #     '--device',
-    #     dest='devices',
-    #     help='add a host device to the container '
-    #          '(e.g. --device=/dev/sdc:/dev/xvdc:rwm)'
-    # )
-    # run_subparser.add_argument(
-    #     '--tmpfs',
-    #     dest='tmpfs',
-    #     help='create a tmpfs mount'
-    # )
+    run_subparser.add_argument(
+        '--memory-swap',
+        dest='memswap_limit',
+        type=int,
+        help='a limit value equal to memory plus swap. Must be used with '
+             'the  -m (--memory) flag. '
+             'The swap LIMIT should always be larger '
+             'than -m (--memory) value.'
+    )
+    run_subparser.add_argument(
+        '--memory-swappiness',
+        dest='mem_swappiness',
+        type=int,
+        help='tune a container\'s memory swappiness behavior. '
+             'Accepts an integer between 0 and 100.'
+    )
+    run_subparser.add_argument(
+        '--shm-size',
+        dest='shm_size',
+        help='size of /dev/shm'
+    )
+    run_subparser.add_argument(
+        '--cpu-period',
+        dest='cpu_period',
+        help='limit the CPU CFS (Completely Fair Scheduler) period'
+    )
+    run_subparser.add_argument(
+        '--group-add',
+        dest='group_add',
+        help='add additional groups to run as'
+    )
+    run_subparser.add_argument(
+        '--device',
+        action='append',
+        dest='devices',
+        help='add a host device to the container '
+             '(e.g. --device=/dev/sdc:/dev/xvdc:rwm)'
+    )
+    run_subparser.add_argument(
+        '--tmpfs',
+        action='append',
+        dest='tmpfs',
+        help='create a tmpfs mount'
+    )
 
 
 def ps_parser(subparsers):
