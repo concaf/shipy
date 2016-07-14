@@ -277,7 +277,6 @@ def run_parser(subparsers):
     run_subparser.add_argument(
         '--memory-swap',
         dest='memswap_limit',
-        type=int,
         help='a limit value equal to memory plus swap. Must be used with '
              'the  -m (--memory) flag. '
              'The swap LIMIT should always be larger '
@@ -298,10 +297,12 @@ def run_parser(subparsers):
     run_subparser.add_argument(
         '--cpu-period',
         dest='cpu_period',
+        type=int,
         help='limit the CPU CFS (Completely Fair Scheduler) period'
     )
     run_subparser.add_argument(
         '--group-add',
+        action='append',
         dest='group_add',
         help='add additional groups to run as'
     )

@@ -213,7 +213,7 @@ class Shipy(object):
             'cpu_period',
             'group_add',
             'devices',
-            'tmpfs'
+            'tmpfs',
             'blkio_weight',
             'blkio_weight_device',
             'device_read_bps',

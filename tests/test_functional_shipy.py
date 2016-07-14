@@ -493,7 +493,7 @@ def test_docker_run_shm_size(client, shipy):
 
 def test_docker_run_cpu_period(client, shipy):
     farg = '--cpu-period'
-    fval = ('1000',)
+    fval = (1000,)
     container = run_template(client, shipy, farg=farg, fval=fval)
 
     assert fval[0] == \
@@ -502,11 +502,11 @@ def test_docker_run_cpu_period(client, shipy):
 
 def test_docker_run_group_add(client, shipy):
     farg = '--group-add'
-    fval = ('nobody',)
+    fval = ('wheel',)
     container = run_template(client, shipy, farg=farg, fval=fval)
 
     assert fval[0] == \
-           client.inspect_container(container)['HostConfig']['GroupAdd']
+           client.inspect_container(container)['HostConfig']['GroupAdd'][0]
 
 
 def test_docker_run_device(client, shipy):
