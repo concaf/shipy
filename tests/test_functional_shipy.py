@@ -255,8 +255,7 @@ def test_docker_run_privileged(client, shipy):
 
     container = run_template(client, shipy, farg=farg)
 
-    assert True == \
-           client.inspect_container(container)['HostConfig']['Privileged']
+    assert client.inspect_container(container)['HostConfig']['Privileged']
 
 
 def test_docker_run_dns(client, shipy):
@@ -365,8 +364,7 @@ def test_docker_run_read_only(client, shipy):
 
     container = run_template(client, shipy, farg=farg)
 
-    assert True == \
-           client.inspect_container(container)['HostConfig']['ReadonlyRootfs']
+    assert client.inspect_container(container)['HostConfig']['ReadonlyRootfs']
 
 
 def test_docker_run_pid(client, shipy):
@@ -543,3 +541,158 @@ def test_docker_run_tmpfs(client, shipy):
     for val in fval:
         mount, args = val.split(':')
         assert tmpfs[mount] == args
+
+
+def test_docker_run_interactive(client, shipy):
+    argument = ('-i', '--interactive')
+
+    for farg in argument:
+        container = run_template(client, shipy, farg=farg)
+
+        assert client.inspect_container(container)[
+            'Config']['AttachStdin']
+        assert client.inspect_container(container)[
+            'Config']['OpenStdin']
+        assert client.inspect_container(container)[
+            'Config']['StdinOnce']
+
+
+def test_docker_run_tty(client, shipy):
+    argument = ('-t', '--tty')
+
+    for farg in argument:
+        container = run_template(client, shipy, farg=farg)
+
+        assert client.inspect_container(container)['Config']['Tty']
+
+
+def test_docker_run_volume_driver(client, shipy):
+    farg = '--volume-driver'
+    fval = ('local',)
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    assert fval[0] == \
+           client.inspect_container(container)['HostConfig']['VolumeDriver']
+
+
+def test_docker_run_oom_kill_disable(client, shipy):
+    farg = '--oom-kill-disable'
+
+    container = run_template(client, shipy, farg=farg)
+
+    assert client.inspect_container(container)['HostConfig']['OomKillDisable']
+
+
+def test_docker_oom_score_adj(client, shipy):
+    farg = '--oom-score-adj'
+    fval = (42,)
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    assert fval[0] == \
+           client.inspect_container(container)['HostConfig']['OomScoreAdj']
+
+
+# def test_docker_blkio_weight(client, shipy):
+#     farg = '--blkio-weight'
+#     fval = (42,)
+#     container = run_template(client, shipy, farg=farg, fval=fval)
+#
+#     assert fval[0] == \
+#            client.inspect_container(container)['HostConfig']['BlkioWeight']
+#
+#
+# def test_docker_blkio_weight_device(client, shipy):
+#     farg = '--blkio-weight-device'
+#     fval = ('/dev/null:42', '/dev/sdb:84')
+#     container = run_template(client, shipy, farg=farg, fval=fval)
+#
+#     bk = client.inspect_container(container)['HostConfig']['BlkioWeightDevice']
+#
+#     cpath, cweight = [], []
+#     for blkio in bk:
+#         cpath.append(blkio['Path'])
+#         cweight.append(blkio['Weight'])
+#
+#     for val in fval:
+#         path, weight = val.split(':')
+#
+#         assert path in cpath
+#         assert weight in cweight
+#
+#
+# def test_docker_device_read_bps(client, shipy):
+#     farg = '--device-read-bps'
+#     fval = ('/dev/sda:1mb', '/dev/sdb:2mb')
+#     container = run_template(client, shipy, farg=farg, fval=fval)
+#
+#     bk = client.inspect_container(container)['HostConfig']['BlkioDeviceReadBps']
+#
+#     cpath, crate = [], []
+#     for blkio in bk:
+#         cpath.append(blkio['Path'])
+#         crate.append(blkio['Rate'])
+#
+#     for val in fval:
+#         path, rate = val.split(':')
+#
+#         assert path in cpath
+#         assert rate in crate
+#
+#
+# def test_docker_device_write_bps(client, shipy):
+#     farg = '--device-write-bps'
+#     fval = ('/dev/sda:1mb', '/dev/sdb:2mb')
+#     container = run_template(client, shipy, farg=farg, fval=fval)
+#
+#     bk = client.inspect_container(container)['HostConfig']['BlkioDeviceWriteBps']
+#
+#     cpath, crate = [], []
+#     for blkio in bk:
+#         cpath.append(blkio['Path'])
+#         crate.append(blkio['Rate'])
+#
+#     for val in fval:
+#         path, rate = val.split(':')
+#
+#         assert path in cpath
+#         assert rate in crate
+#
+#
+# def test_docker_device_read_iops(client, shipy):
+#     farg = '--device-read-iops'
+#     fval = ('/dev/sda:1000', '/dev/sdb:2000')
+#     container = run_template(client, shipy, farg=farg, fval=fval)
+#
+#     bk = client.inspect_container(container)['HostConfig'][
+#         'BlkioDeviceReadIOps']
+#
+#     cpath, crate = [], []
+#     for blkio in bk:
+#         cpath.append(blkio['Path'])
+#         crate.append(blkio['Rate'])
+#
+#     for val in fval:
+#         path, rate = val.split(':')
+#
+#         assert path in cpath
+#         assert rate in crate
+#
+#
+# def test_docker_device_write_iops(client, shipy):
+#     farg = '--device-write-iops'
+#     fval = ('/dev/sda:1000', '/dev/sdb:2000')
+#     container = run_template(client, shipy, farg=farg, fval=fval)
+#
+#     bk = client.inspect_container(container)['HostConfig'][
+#         'BlkioDeviceWriteIOps']
+#
+#     cpath, crate = [], []
+#     for blkio in bk:
+#         cpath.append(blkio['Path'])
+#         crate.append(blkio['Rate'])
+#
+#     for val in fval:
+#         path, rate = val.split(':')
+#
+#         assert path in cpath
+#         assert rate in crate

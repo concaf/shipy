@@ -1,4 +1,5 @@
 import argparse
+import argparse
 
 
 def define_parsers():
@@ -68,20 +69,20 @@ def run_parser(subparsers):
         help='sets the username or UID used and optionally the '
              'groupname or GID for the  specified command'
     )
-    # run_subparser.add_argument(
-    #     '-i',
-    #     '--interactive',
-    #     dest='stdin_open',
-    #     action='store_true',
-    #     help='keep STDIN open even if not attached'
-    # )
-    # run_subparser.add_argument(
-    #     '-t',
-    #     '--tty',
-    #     dest='tty',
-    #     action='store_true',
-    #     help='allocate a pseudo-TTY'
-    # )
+    run_subparser.add_argument(
+        '-i',
+        '--interactive',
+        dest='stdin_open',
+        action='store_true',
+        help='keep STDIN open even if not attached'
+    )
+    run_subparser.add_argument(
+        '-t',
+        '--tty',
+        dest='tty',
+        action='store_true',
+        help='allocate a pseudo-TTY'
+    )
     run_subparser.add_argument(
         '-e',
         '--env',
@@ -115,14 +116,14 @@ def run_parser(subparsers):
         help='set metadata on the container '
              '(e.g., --label com.example.key=value)'
     )
-    # run_subparser.add_argument(
-    #     '--volume-driver',
-    #     dest='volume_driver',
-    #     type=str,
-    #     help='container\'s volume driver. This driver creates volumes '
-    #          'specified either from a Dockerfile\'s VOLUME instruction '
-    #          'or from the docker run -v flag'
-    # )
+    run_subparser.add_argument(
+        '--volume-driver',
+        dest='volume_driver',
+        type=str,
+        help='container\'s volume driver. This driver creates volumes '
+             'specified either from a Dockerfile\'s VOLUME instruction '
+             'or from the docker run -v flag'
+    )
     run_subparser.add_argument(
         '--stop-signal',
         dest='stop_signal',
@@ -144,19 +145,19 @@ def run_parser(subparsers):
         dest='port_bindings',
         help='port bindings'
     )
-    # run_subparser.add_argument(
-    #     '--oom-kill-disable',
-    #     action='store_true',
-    #     dest='oom_kill_disable',
-    #     help='whether to disable OOM Killer for the container or not'
-    # )
-    # run_subparser.add_argument(
-    #     '--oom-score-adj',
-    #     dest='oom_score_adj',
-    #     type=int,
-    #     help='tune the host\'s OOM preferences for containers '
-    #          '(accepts -1000 to 1000)'
-    # )
+    run_subparser.add_argument(
+        '--oom-kill-disable',
+        action='store_true',
+        dest='oom_kill_disable',
+        help='whether to disable OOM Killer for the container or not'
+    )
+    run_subparser.add_argument(
+        '--oom-score-adj',
+        dest='oom_score_adj',
+        type=int,
+        help='tune the host\'s OOM preferences for containers '
+             '(accepts -1000 to 1000)'
+    )
     run_subparser.add_argument(
         '-P',
         '--publish-all',
@@ -317,6 +318,44 @@ def run_parser(subparsers):
         dest='tmpfs',
         help='create a tmpfs mount'
     )
+    # run_subparser.add_argument(
+    #     '--blkio-weight',
+    #     dest='blkio_weight',
+    #     help='block IO weight (relative weight)'
+    # )
+    # run_subparser.add_argument(
+    #     '--device-read-bps',
+    #     dest='device_read_bps',
+    #     action='append',
+    #     help='Limit read rate (bytes per second) from a device '
+    #          '(e.g., --device-read-bps=/dev/sda:1mb)'
+    # )
+    # run_subparser.add_argument(
+    #     '--device-write-bps',
+    #     action='append',
+    #     dest='device_write_bps',
+    #     help='Limit write rate (bytes per second) from a device'
+    # )
+    # run_subparser.add_argument(
+    #     '--device-read-iops',
+    #     action='append',
+    #     dest='device_read_iops',
+    #     help='limit read rate (IO per second) from a device'
+    # )
+    # run_subparser.add_argument(
+    #     '--device-write-iops',
+    #     action='append',
+    #     dest='device_write_iops',
+    #     help='limit write rate (IO per second) from a device'
+    # )
+    # run_subparser.add_argument(
+    #     '--blkio-weight-device',
+    #     action='append',
+    #     dest='blkio_weight_device',
+    #     help='Block IO weight (relative device weight, format:'
+    #          ' `DEVICE_NAME:WEIGHT`)'
+    # )
+
 
 
 def ps_parser(subparsers):

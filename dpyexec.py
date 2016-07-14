@@ -131,6 +131,44 @@ class Shipy(object):
 
         del host_config_params[param]
 
+    # The following only works with docker-py >= 1.9.0
+    #
+    # def _host_config_blkio_weight_device(self, param, host_config_params):
+    #     blkw = []
+    #     for blkio_weight in host_config_params[param]:
+    #         path, weight = blkio_weight.split(':')
+    #         blkw.append({'Path': path, 'Weight': weight})
+    #     host_config_params[param] = blkw
+    #
+    # def _host_config_device_read_bps(self, param, host_config_params):
+    #     drbps = []
+    #     for read_bps in host_config_params[param]:
+    #         path, rate = read_bps.split(':')
+    #         drbps.append({'Path': path, 'Rate': rate})
+    #     host_config_params[param] = drbps
+    #
+    # def _host_config_device_write_bps(self, param, host_config_params):
+    #     dwbps = []
+    #     for write_bps in host_config_params[param]:
+    #         path, rate = write_bps.split(':')
+    #         dwbps.append({'Path': path, 'Rate': rate})
+    #     host_config_params[param] = dwbps
+    #
+    # def _host_config_device_read_iops(self, param, host_config_params):
+    #     driops = []
+    #     for read_iops in host_config_params[param]:
+    #         path, rate = read_iops.split(':')
+    #         driops.append({'Path': path, 'Rate': rate})
+    #     host_config_params[param] = driops
+    #
+    # def _host_config_device_write_iops(self, param, host_config_params):
+    #     dwiops = []
+    #     for write_iops in host_config_params[param]:
+    #         path, rate = write_iops.split(':')
+    #         dwiops.append({'Path': path, 'Rate': rate})
+    #     host_config_params[param] = dwiops
+    #     print host_config_params[param]
+
     def _host_config_gen(self, client, args):
         """
         Parameters which are to be passed to client.create_container()
@@ -176,6 +214,12 @@ class Shipy(object):
             'group_add',
             'devices',
             'tmpfs'
+            'blkio_weight',
+            'blkio_weight_device',
+            'device_read_bps',
+            'device_write_bps',
+            'device_read_iops',
+            'device_write_iops'
         ]
 
         for param in parameters:
@@ -206,6 +250,26 @@ class Shipy(object):
 
                 if param == 'log_opt':
                     self._host_config_log_opt(param, host_config_params)
+
+                if param == 'device_write_bps':
+                    self._host_config_device_write_bps(param,
+                                                       host_config_params)
+
+                if param == 'device_read_iops':
+                    self._host_config_device_write_iops(param,
+                                                        host_config_params)
+
+                if param == 'device_write_iops':
+                    self._host_config_device_write_iops(param,
+                                                        host_config_params)
+
+                if param == 'blkio_weight_device':
+                    self._host_config_blkio_weight_device(param,
+                                                          host_config_params)
+
+                if param == 'device_read_bps':
+                    self._host_config_device_read_bps(param,
+                                                      host_config_params)
 
         if len(host_config_params) > 0:
             logging.debug('Creating host_config.')
