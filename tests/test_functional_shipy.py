@@ -400,3 +400,20 @@ def test_docker_run_security_opt(client, shipy):
 
     assert [fval[0], fval[1]] == \
            client.inspect_container(container)['HostConfig']['SecurityOpt']
+
+
+def test_docker_run_ulimit(client, shipy):
+    farg = '--ulimit'
+    fval = ('nproc=3:4', 'nofile=1024')
+    container = run_template(client, shipy, farg=farg, fval=fval)
+
+    for v, u in zip(fval,
+                client.inspect_container(container)['HostConfig']['Ulimits']):
+        name, limit = v.split('=')
+        limits = limit.split(':')
+        soft = int(limits[0])
+        hard = int(limits[1]) if len(limits) == 2 else soft
+
+        assert u['Name'] == name
+        assert u['Soft'] == soft
+        assert u['Hard'] == hard

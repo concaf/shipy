@@ -20,7 +20,7 @@ class Shipy(object):
         # remove unnecessary parameters from the args dictionary
         for param, value in args.items():
             if param not in ('mode', args['mode'], 'isverbose') and \
-                    value not in (None, False):
+                            value not in (None, False):
                 sane_input.update({param: value})
 
             if param == 'labels' and value is not None:
@@ -68,14 +68,12 @@ class Shipy(object):
         host_config_params[param] = host_config_bindings[param]
 
         del args[param]
-        return args, host_config_params
 
     def _host_config_binds(self, args, param, host_config_params):
         volume_bindings = []
         for bindings in host_config_params[param]:
             volume_bindings.append(bindings.split(':')[0])
         args.update({'volumes': volume_bindings})
-        return args
 
     def _host_config_links(self, param, host_config_params):
         final_links = []
@@ -90,7 +88,6 @@ class Shipy(object):
                 final_links.append((link_split[0], link_split[1]))
 
         host_config_params[param] = final_links
-        return host_config_params
 
     def _host_config_restart_policy(self, param, host_config_params):
         restart_dict = {}
@@ -99,7 +96,23 @@ class Shipy(object):
         if restart_opts[0] == 'on-failure' and len(restart_opts) == 2:
             restart_dict['MaximumRetryCount'] = int(restart_opts[1])
         host_config_params[param] = restart_dict
-        return host_config_params
+
+    def _host_config_ulimits(self, param, host_config_params):
+
+        ulimit_list = []
+        for ulimit in host_config_params[param]:
+            ulimit_dict = {}
+            type, limit = ulimit.split('=')
+            ulimit_dict['Name'] = type
+            lim = limit.split(':')
+
+            ulimit_dict['Soft'] = int(lim[0])
+            ulimit_dict['Hard'] = int(lim[1]) if len(lim) == 2 else \
+                ulimit_dict['Soft']
+
+            ulimit_list.append(ulimit_dict)
+
+        host_config_params[param] = ulimit_list
 
     def _host_config_gen(self, client, args):
         """
@@ -155,18 +168,20 @@ class Shipy(object):
                     del args[param]
 
                 if param == 'port_bindings':
-                    args, host_config_params = self._host_config_port_bindings(
-                        args, param, host_config_params
-                    )
+                    self._host_config_port_bindings(args, param,
+                                                    host_config_params)
 
                 if param == 'binds':
-                    args = self._host_config_binds(args, param, host_config_params)
+                    self._host_config_binds(args, param, host_config_params)
 
                 if param == 'links':
                     self._host_config_links(param, host_config_params)
 
                 if param == 'restart_policy':
                     self._host_config_restart_policy(param, host_config_params)
+
+                if param == 'ulimits':
+                    self._host_config_ulimits(param, host_config_params)
 
         if len(host_config_params) > 0:
             logging.debug('Creating host_config.')
