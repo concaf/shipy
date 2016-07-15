@@ -1,3 +1,18 @@
+<pre>
+                                              
+                                              
+                                              
+                                              
+              __                              
+              \ \___     .__                  
+            .--""___\..--"/                   
+        .__.|-"""..... ' / ____                   
+________\_______________/_/ O  \___/
+ <_/_\_/_\_/_\_/_\_/_\_/_______/   \  
+
+
+</pre>
+
 # shipy
 
 shipy is a python library which runs the `docker` commands using [`docker-py`](github.com/docker/docker-py) and returns parseable output.
