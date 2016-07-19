@@ -276,7 +276,7 @@ class Shipy(object):
                 #                                       host_config_params)
 
         if len(host_config_params) > 0:
-            self.logger.debug('Creating host_config.')
+            self.logger.debug('Creating host_config')
             host_config = client.create_host_config(**host_config_params)
         else:
             host_config = None
@@ -308,7 +308,7 @@ class Shipy(object):
         sane_start = {}
         sane_start.update({'container': cid})
         try:
-            self.logger.debug('Running container {}.'.format(cid))
+            self.logger.debug('Running container {}'.format(cid))
             client.start(**sane_start)
             return cid
         except Exception as e:
@@ -332,7 +332,7 @@ class Shipy(object):
         if host_config:
             sane_create.update({'host_config': host_config})
 
-        self.logger.debug('Creating container.')
+        self.logger.debug('Creating container')
         container_info = client.create_container(**sane_create)
         return container_info['Id']
 
