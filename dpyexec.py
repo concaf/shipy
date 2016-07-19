@@ -1,6 +1,7 @@
 from ast import literal_eval
 from collections import namedtuple
 from docker import Client, errors, version as dpy_version, constants
+from json import loads
 import logging
 import parser
 import sys
@@ -292,9 +293,7 @@ class Shipy(object):
         """
 
         # pull image if it does not exist
-        if not client.images(name=sane_input['image']):
-            self.logger.debug('Container image does not exist locally, pulling ...')
-            self.pull(client, sane_input)
+        self.pull(client, sane_input)
 
         # Create and start the container
         return self.start(client, self.create(client, sane_input))
@@ -424,6 +423,12 @@ class Shipy(object):
         :return: True if image pulled, False otherwise
         """
 
+        if not client.images(name=sane_input['image']):
+            self.logger.debug('Container image does not exist locally, pulling ...')
+        else:
+            self.logger.debug('Container image already exists')
+            return True
+
         # add tag to the image name if not provided by the user
         if len(sane_input['image'].split(':')) == 1:
             self.logger.debug('No tag provided, pulling tag latest')
@@ -431,13 +436,15 @@ class Shipy(object):
                 sane_input['image'])})
 
         try:
-            client.pull(sane_input['image'])
+            pull_output = client.pull(sane_input['image'])
+            for line in pull_output.split('\r\n')[:-1]:
+                status = loads(line)
+                if 'error' in status.keys():
+                    self.logger.debug(status['error'])
+                    return False
 
-            for images in client.images():
-                if images['RepoTags'][0] == sane_input['image']:
-                    self.logger.debug('Pulled image {}'.format(
-                        sane_input['image']))
-                    return True
+            self.logger.debug('Pulled image {}'.format(sane_input['image']))
+            return True
 
         except Exception as e:
             self.logger.debug('Could not pull image {}'.format(
