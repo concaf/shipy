@@ -431,8 +431,7 @@ class Shipy(object):
                 sane_input['image'])})
 
         try:
-            for pull_output in client.pull(sane_input['image'], stream=True):
-                self.logger.debug(literal_eval(pull_output)['status'])
+            client.pull(sane_input['image'])
 
             for images in client.images():
                 if images['RepoTags'][0] == sane_input['image']:
@@ -440,9 +439,10 @@ class Shipy(object):
                         sane_input['image']))
                     return True
 
-        except:
+        except Exception as e:
             self.logger.debug('Could not pull image {}'.format(
                 sane_input['image']))
+            self.logger.debug(e.message)
             return False
 
     def restart(self, client, sane_input):
