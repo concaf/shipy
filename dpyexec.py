@@ -423,13 +423,6 @@ class Shipy(object):
         :return: True if image pulled, False otherwise
         """
 
-        if not (client.images(name=sane_input['image'])) or \
-                client.images(name='docker.io/{}'.format(sane_input['image'])):
-            self.logger.debug('Container image does not exist locally, pulling ...')
-        else:
-            self.logger.debug('Container image already exists')
-            return True
-
         # add tag to the image name if not provided by the user
         if len(sane_input['image'].split(':')) == 1:
             self.logger.debug('No tag provided, pulling tag latest')
