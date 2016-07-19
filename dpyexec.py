@@ -7,6 +7,10 @@ import sys
 
 
 class Shipy(object):
+    def __init__(self):
+        logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+        self.logger = logging.getLogger(__name__)
+
     def _sanify(self, args):
         """
         This is where all the passed arguments come after getting parsed by
@@ -251,28 +255,28 @@ class Shipy(object):
                 if param == 'log_opt':
                     self._host_config_log_opt(param, host_config_params)
 
-                if param == 'device_write_bps':
-                    self._host_config_device_write_bps(param,
-                                                       host_config_params)
-
-                if param == 'device_read_iops':
-                    self._host_config_device_write_iops(param,
-                                                        host_config_params)
-
-                if param == 'device_write_iops':
-                    self._host_config_device_write_iops(param,
-                                                        host_config_params)
-
-                if param == 'blkio_weight_device':
-                    self._host_config_blkio_weight_device(param,
-                                                          host_config_params)
-
-                if param == 'device_read_bps':
-                    self._host_config_device_read_bps(param,
-                                                      host_config_params)
+                # if param == 'device_write_bps':
+                #     self._host_config_device_write_bps(param,
+                #                                        host_config_params)
+                #
+                # if param == 'device_read_iops':
+                #     self._host_config_device_write_iops(param,
+                #                                         host_config_params)
+                #
+                # if param == 'device_write_iops':
+                #     self._host_config_device_write_iops(param,
+                #                                         host_config_params)
+                #
+                # if param == 'blkio_weight_device':
+                #     self._host_config_blkio_weight_device(param,
+                #                                           host_config_params)
+                #
+                # if param == 'device_read_bps':
+                #     self._host_config_device_read_bps(param,
+                #                                       host_config_params)
 
         if len(host_config_params) > 0:
-            logging.debug('Creating host_config.')
+            self.logger.debug('Creating host_config.')
             host_config = client.create_host_config(**host_config_params)
         else:
             host_config = None
@@ -289,7 +293,7 @@ class Shipy(object):
 
         # pull image if it does not exist
         if not client.images(name=sane_input['image']):
-            logging.info('Container image does not exist locally, pulling ...')
+            self.logger.info('Container image does not exist locally, pulling ...')
             self.pull(client, sane_input)
 
         # Create and start the container
@@ -307,11 +311,11 @@ class Shipy(object):
         sane_start = {}
         sane_start.update({'container': cid})
         try:
-            logging.info('Running container {}.'.format(cid))
+            self.logger.info('Running container {}.'.format(cid))
             client.start(**sane_start)
             return cid
         except Exception as e:
-            logging.info(e)
+            self.logger.info(e)
             return False
 
     def create(self, client, sane_create):
@@ -323,7 +327,7 @@ class Shipy(object):
         :return: ID of the container created
         """
         if len(sane_create['image'].split(':')) == 1:
-            logging.debug('No tag provided, using tag latest')
+            self.logger.debug('No tag provided, using tag latest')
             sane_create.update({'image': '{}:latest'.
                                format(sane_create['image'])})
 
@@ -331,7 +335,7 @@ class Shipy(object):
         if host_config:
             sane_create.update({'host_config': host_config})
 
-        logging.debug('Creating container.')
+        self.logger.debug('Creating container.')
         container_info = client.create_container(**sane_create)
         return container_info['Id']
 
@@ -346,7 +350,7 @@ class Shipy(object):
 
         ps_output = client.containers(**sane_input)
         for container in ps_output:
-            logging.info('Name: {}, ID: {}'.format(
+            self.logger.info('Name: {}, ID: {}'.format(
                 container['Names'][0].split('/')[1],
                 container['Id'][:8]))
 
@@ -363,10 +367,10 @@ class Shipy(object):
 
         try:
             client.kill(**sane_input)
-            logging.info('Killed container {}'.format(sane_input['container']))
+            self.logger.info('Killed container {}'.format(sane_input['container']))
             return True
         except errors.NotFound:
-            logging.info('Container {} not found.'
+            self.logger.info('Container {} not found.'
                          .format(sane_input['container']))
             return False
 
@@ -381,11 +385,11 @@ class Shipy(object):
 
         try:
             client.stop(**sane_input)
-            logging.info('Stopped container {}'
+            self.logger.info('Stopped container {}'
                          .format(sane_input['container']))
             return True
         except errors.NotFound:
-            logging.info('Container {} not found.'
+            self.logger.info('Container {} not found.'
                          .format(sane_input['container']))
             return False
 
@@ -400,15 +404,15 @@ class Shipy(object):
 
         try:
             client.remove_container(**sane_input)
-            logging.info('Removed container {}'
+            self.logger.info('Removed container {}'
                          .format(sane_input['container']))
             return True
         except errors.NotFound:
-            logging.info('Container {} not found.'
+            self.logger.info('Container {} not found.'
                          .format(sane_input['container']))
             return False
         except Exception as e:
-            logging.info(e.message)
+            self.logger.info(e.message)
             return False
 
     def pull(self, client, sane_input):
@@ -423,22 +427,22 @@ class Shipy(object):
 
         # add tag to the image name if not provided by the user
         if len(sane_input['image'].split(':')) == 1:
-            logging.info('No tag provided, pulling tag latest')
+            self.logger.info('No tag provided, pulling tag latest')
             sane_input.update({'image': '{}:latest'.format(
                 sane_input['image'])})
 
         try:
             for pull_output in client.pull(sane_input['image'], stream=True):
-                logging.debug(literal_eval(pull_output)['status'])
+                self.logger.debug(literal_eval(pull_output)['status'])
 
             for images in client.images():
                 if images['RepoTags'][0] == sane_input['image']:
-                    logging.info('Pulled image {}'.format(
+                    self.logger.info('Pulled image {}'.format(
                         sane_input['image']))
                     return True
 
         except:
-            logging.info('Could not pull image {}'.format(
+            self.logger.info('Could not pull image {}'.format(
                 sane_input['image']))
             return False
 
@@ -453,12 +457,12 @@ class Shipy(object):
 
         try:
             client.restart(**sane_input)
-            logging.info('Restarted container {}'
+            self.logger.info('Restarted container {}'
                          .format(sane_input['container']))
             return True
 
         except errors.NotFound:
-            logging.info('Could not find container {}'.format(
+            self.logger.info('Could not find container {}'.format(
                 sane_input['container']))
             return False
 
@@ -492,7 +496,7 @@ class Shipy(object):
                               server=None,
                               compatible=False)
 
-        logging.info('\ndocker-py: {}\n'
+        self.logger.info('\ndocker-py: {}\n'
                      'Client API: {}\n'
                      'Server API: {}\n'
                      'Compatibility: {}'.format(version.dpy,
@@ -501,7 +505,7 @@ class Shipy(object):
                                                 version.compatible))
         return version
 
-    def shipy(self, args):
+    def shipy(self, args, external_logger=None):
         """
         The entrypoint for shipy, takes in the arguments from the user,
         processes them, refines them, and delegates to respective functions.
@@ -524,12 +528,14 @@ class Shipy(object):
 
         shipy_parser = parser.define_parsers()
         sh_args = shipy_parser.parse_args(args)
-        # set logging level
+
+        # set logging
+        if external_logger:
+            self.logger = external_logger
+
         if sh_args.isverbose:
             logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
             logging.debug('Setting logging level to logging.DEBUG')
-        else:
-            logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
         server_url = 'unix://var/run/docker.sock'
 
