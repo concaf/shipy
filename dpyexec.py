@@ -496,9 +496,9 @@ class Shipy(object):
                               server=None,
                               compatible=False)
 
-        self.logger.info('\ndocker-py: {}\n'
-                     'Client API: {}\n'
-                     'Server API: {}\n'
+        self.logger.debug('docker-py: {}\n'
+                     'Client API: {} '
+                     'Server API: {} '
                      'Compatibility: {}'.format(version.dpy,
                                                 version.capi,
                                                 version.sapi,
@@ -534,8 +534,8 @@ class Shipy(object):
             self.logger = external_logger
 
         if sh_args.isverbose:
-            logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-            logging.debug('Setting logging level to logging.DEBUG')
+            self.logger.setLevel(logging.DEBUG)
+            self.logger.debug('Setting logging level to logging.DEBUG')
 
         server_url = 'unix://var/run/docker.sock'
 
