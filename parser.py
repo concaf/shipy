@@ -1,5 +1,4 @@
 import argparse
-import argparse
 
 
 def define_parsers():
@@ -356,7 +355,6 @@ def run_parser(subparsers):
     #     help='Block IO weight (relative device weight, format:'
     #          ' `DEVICE_NAME:WEIGHT`)'
     # )
-
 
 
 def ps_parser(subparsers):

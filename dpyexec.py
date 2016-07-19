@@ -1,10 +1,8 @@
-from ast import literal_eval
 from collections import namedtuple
 from docker import Client, errors, version as dpy_version, constants
 from json import loads
 import logging
 import parser
-import sys
 
 
 class Shipy(object):
@@ -23,8 +21,8 @@ class Shipy(object):
 
         # remove unnecessary parameters from the args dictionary
         for param, value in args.items():
-            if param not in ('mode', args['mode'], 'isverbose') and \
-                            value not in (None, False):
+            if param not in ('mode', args['mode'], 'isverbose') and value \
+                    not in (None, False):
                 sane_input.update({param: value})
 
             if param == 'labels' and value is not None:
@@ -207,8 +205,8 @@ class Shipy(object):
             'ipc_mode',
             'security_opt',
             'ulimits',
-            'log_driver', # merges in log_config
-            'log_opt', # merges in log_config
+            'log_driver',  # merges in log_config
+            'log_opt',  # merges in log_config
             'mem_limit',
             'memswap_limit',
             'mem_swappiness',
@@ -368,7 +366,7 @@ class Shipy(object):
             return True
         except errors.NotFound:
             self.logger.debug('Container {} not found.'
-                         .format(sane_input['container']))
+                              .format(sane_input['container']))
             return False
 
     def stop(self, client, sane_input):
@@ -383,11 +381,11 @@ class Shipy(object):
         try:
             client.stop(**sane_input)
             self.logger.debug('Stopped container {}'
-                         .format(sane_input['container']))
+                              .format(sane_input['container']))
             return True
         except errors.NotFound:
             self.logger.debug('Container {} not found.'
-                         .format(sane_input['container']))
+                              .format(sane_input['container']))
             return False
 
     def rm(self, client, sane_input):
@@ -402,11 +400,11 @@ class Shipy(object):
         try:
             client.remove_container(**sane_input)
             self.logger.debug('Removed container {}'
-                         .format(sane_input['container']))
+                              .format(sane_input['container']))
             return True
         except errors.NotFound:
             self.logger.debug('Container {} not found.'
-                         .format(sane_input['container']))
+                              .format(sane_input['container']))
             return False
         except Exception as e:
             self.logger.debug(e.message)
@@ -457,7 +455,7 @@ class Shipy(object):
         try:
             client.restart(**sane_input)
             self.logger.debug('Restarted container {}'
-                         .format(sane_input['container']))
+                              .format(sane_input['container']))
             return True
 
         except errors.NotFound:
@@ -496,12 +494,12 @@ class Shipy(object):
                               compatible=False)
 
         self.logger.debug('docker-py: {} '
-                     'Client API: {} '
-                     'Server API: {} '
-                     'Compatibility: {}'.format(version.dpy,
-                                                version.capi,
-                                                version.sapi,
-                                                version.compatible))
+                          'Client API: {} '
+                          'Server API: {} '
+                          'Compatibility: {}'.format(version.dpy,
+                                                     version.capi,
+                                                     version.sapi,
+                                                     version.compatible))
         return version
 
     def shipy(self, args, external_logger=None):
