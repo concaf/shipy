@@ -293,7 +293,7 @@ class Shipy(object):
 
         # pull image if it does not exist
         if not client.images(name=sane_input['image']):
-            self.logger.info('Container image does not exist locally, pulling ...')
+            self.logger.debug('Container image does not exist locally, pulling ...')
             self.pull(client, sane_input)
 
         # Create and start the container
@@ -311,11 +311,11 @@ class Shipy(object):
         sane_start = {}
         sane_start.update({'container': cid})
         try:
-            self.logger.info('Running container {}.'.format(cid))
+            self.logger.debug('Running container {}.'.format(cid))
             client.start(**sane_start)
             return cid
         except Exception as e:
-            self.logger.info(e)
+            self.logger.debug(e)
             return False
 
     def create(self, client, sane_create):
@@ -350,7 +350,7 @@ class Shipy(object):
 
         ps_output = client.containers(**sane_input)
         for container in ps_output:
-            self.logger.info('Name: {}, ID: {}'.format(
+            self.logger.debug('Name: {}, ID: {}'.format(
                 container['Names'][0].split('/')[1],
                 container['Id'][:8]))
 
@@ -367,10 +367,10 @@ class Shipy(object):
 
         try:
             client.kill(**sane_input)
-            self.logger.info('Killed container {}'.format(sane_input['container']))
+            self.logger.debug('Killed container {}'.format(sane_input['container']))
             return True
         except errors.NotFound:
-            self.logger.info('Container {} not found.'
+            self.logger.debug('Container {} not found.'
                          .format(sane_input['container']))
             return False
 
@@ -385,11 +385,11 @@ class Shipy(object):
 
         try:
             client.stop(**sane_input)
-            self.logger.info('Stopped container {}'
+            self.logger.debug('Stopped container {}'
                          .format(sane_input['container']))
             return True
         except errors.NotFound:
-            self.logger.info('Container {} not found.'
+            self.logger.debug('Container {} not found.'
                          .format(sane_input['container']))
             return False
 
@@ -404,15 +404,15 @@ class Shipy(object):
 
         try:
             client.remove_container(**sane_input)
-            self.logger.info('Removed container {}'
+            self.logger.debug('Removed container {}'
                          .format(sane_input['container']))
             return True
         except errors.NotFound:
-            self.logger.info('Container {} not found.'
+            self.logger.debug('Container {} not found.'
                          .format(sane_input['container']))
             return False
         except Exception as e:
-            self.logger.info(e.message)
+            self.logger.debug(e.message)
             return False
 
     def pull(self, client, sane_input):
@@ -427,7 +427,7 @@ class Shipy(object):
 
         # add tag to the image name if not provided by the user
         if len(sane_input['image'].split(':')) == 1:
-            self.logger.info('No tag provided, pulling tag latest')
+            self.logger.debug('No tag provided, pulling tag latest')
             sane_input.update({'image': '{}:latest'.format(
                 sane_input['image'])})
 
@@ -437,12 +437,12 @@ class Shipy(object):
 
             for images in client.images():
                 if images['RepoTags'][0] == sane_input['image']:
-                    self.logger.info('Pulled image {}'.format(
+                    self.logger.debug('Pulled image {}'.format(
                         sane_input['image']))
                     return True
 
         except:
-            self.logger.info('Could not pull image {}'.format(
+            self.logger.debug('Could not pull image {}'.format(
                 sane_input['image']))
             return False
 
@@ -457,12 +457,12 @@ class Shipy(object):
 
         try:
             client.restart(**sane_input)
-            self.logger.info('Restarted container {}'
+            self.logger.debug('Restarted container {}'
                          .format(sane_input['container']))
             return True
 
         except errors.NotFound:
-            self.logger.info('Could not find container {}'.format(
+            self.logger.debug('Could not find container {}'.format(
                 sane_input['container']))
             return False
 
