@@ -8,7 +8,7 @@ import sys
 
 class Shipy(object):
     def __init__(self):
-        logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+        logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
 
     def _sanify(self, args):
@@ -297,7 +297,6 @@ class Shipy(object):
             self.pull(client, sane_input)
 
         # Create and start the container
-
         return self.start(client, self.create(client, sane_input))
 
     def start(self, client, cid):
@@ -496,7 +495,7 @@ class Shipy(object):
                               server=None,
                               compatible=False)
 
-        self.logger.debug('docker-py: {}\n'
+        self.logger.debug('docker-py: {} '
                      'Client API: {} '
                      'Server API: {} '
                      'Compatibility: {}'.format(version.dpy,
