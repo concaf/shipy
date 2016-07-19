@@ -82,7 +82,8 @@ def test_docker_run_env(client, shipy):
         container = run_template(client, shipy,
                                  farg=farg, fval=fval)
 
-        assert list(fval) == \
+        for env in fval:
+            assert env in \
                client.inspect_container(container)['Config']['Env']
 
 
