@@ -9,7 +9,6 @@ import sys
 
 class Shipy(object):
     def __init__(self):
-        logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(__name__)
 
     def _sanify(self, args):
